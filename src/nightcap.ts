@@ -1,10 +1,12 @@
 import {drinkSafe, drinkSpleen, ensureOde, fillAllSpleen, getPropertyInt} from './daily-lib';
 
 function normalLimit(): number {
-  return Lib.inebrietyLimit() - (Lib.myFamiliar().name === 'Stooper' ? 1 : 0);
+  return Lib.inebrietyLimit() - (Lib.myFamiliar() === Familiar.get('Stooper') ? 1 : 0);
 }
 
 export function main(args: string) {
+  if (args === undefined) args = '';
+
   if (Lib.myInebriety() < normalLimit() || Lib.myFullness() < Lib.fullnessLimit()) {
     Lib.abort('Make sure organs are full first.');
   }
@@ -16,10 +18,9 @@ export function main(args: string) {
     Lib.retrieveItem(count, Item.get('magical sausage'));
     for (let i = 0; i < count; i++) {
       while (
-        Lib.reverseNumberology().includes(69) &&
+        Lib.reverseNumberology()['69'] !== undefined &&
         getPropertyInt('_universeCalculated') < getPropertyInt('skillLevel144')
       ) {
-        if (Lib.myAdventures() === 0) Lib.eat(1, Item.get('magical sausage'));
         Lib.cliExecute('numberology 69');
       }
       if (getPropertyInt('_universeCalculated') >= getPropertyInt('skillLevel144')) break;
@@ -45,6 +46,10 @@ export function main(args: string) {
       drinkSpleen(1, Item.get('jar of fermented pickle juice'));
     }
 
+    if (Lib.myInebriety() > Lib.inebrietyLimit()) {
+      fillAllSpleen();
+    }
+
     if (!args.includes('ascend')) {
       Lib.use(5, Item.get('resolution: be more adventurous'));
       Lib.cliExecute('equip burning cape');
@@ -57,8 +62,6 @@ export function main(args: string) {
       if (!Lib.getCampground()['clockwork maid']) {
         Lib.use(1, Item.get('clockwork maid'));
       }
-
-      fillAllSpleen();
     }
 
     Lib.cliExecute('beachcomber free');
