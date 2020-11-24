@@ -1,0 +1,37 @@
+{
+  "name": "bean-daily",
+  "version": "0.0.0",
+  "description": "Daily scripts for KoL",
+  "main": "hobodiet.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "patch-package",
+    "build": "npm run build:types && npm run build:js",
+    "build:types": "tsc",
+    "build:js": "babel src --out-dir build --extensions \".ts\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/phulin/bean-daily.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/phulin/bean-daily/issues"
+  },
+  "homepage": "https://github.com/phulin/bean-daily#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/cli": "^7.12.8",
+    "@babel/core": "^7.12.8",
+    "@babel/preset-env": "^7.12.7",
+    "@babel/preset-typescript": "^7.12.7",
+    "@rollup/plugin-babel": "^5.2.1",
+    "@rollup/plugin-typescript": "^6.1.0",
+    "libram": "github:Loathing-Associates-Scripting-Society/libram",
+    "patch-package": "^6.2.2",
+    "rollup": "^2.33.3",
+    "tslint": "^6.1.3",
+    "typescript": "^4.1.2"
+  }
+}
