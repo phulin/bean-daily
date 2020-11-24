@@ -8,10 +8,12 @@ exports.main = main;
 var _dailyLib = require("./daily-lib");
 
 function normalLimit() {
-  return Lib.inebrietyLimit() - (Lib.myFamiliar().name === 'Stooper' ? 1 : 0);
+  return Lib.inebrietyLimit() - (Lib.myFamiliar() === Familiar.get('Stooper') ? 1 : 0);
 }
 
 function main(args) {
+  if (args === undefined) args = '';
+
   if (Lib.myInebriety() < normalLimit() || Lib.myFullness() < Lib.fullnessLimit()) {
     Lib.abort('Make sure organs are full first.');
   }
@@ -24,8 +26,7 @@ function main(args) {
     Lib.retrieveItem(count, Item.get('magical sausage'));
 
     for (var i = 0; i < count; i++) {
-      while (Lib.reverseNumberology().includes(69) && (0, _dailyLib.getPropertyInt)('_universeCalculated') < (0, _dailyLib.getPropertyInt)('skillLevel144')) {
-        if (Lib.myAdventures() === 0) Lib.eat(1, Item.get('magical sausage'));
+      while (Lib.reverseNumberology()['69'] !== undefined && (0, _dailyLib.getPropertyInt)('_universeCalculated') < (0, _dailyLib.getPropertyInt)('skillLevel144')) {
         Lib.cliExecute('numberology 69');
       }
 
@@ -53,6 +54,10 @@ function main(args) {
       (0, _dailyLib.drinkSpleen)(1, Item.get('jar of fermented pickle juice'));
     }
 
+    if (Lib.myInebriety() > Lib.inebrietyLimit()) {
+      (0, _dailyLib.fillAllSpleen)();
+    }
+
     if (!args.includes('ascend')) {
       Lib.use(5, Item.get('resolution: be more adventurous'));
       Lib.cliExecute('equip burning cape');
@@ -64,8 +69,6 @@ function main(args) {
       if (!Lib.getCampground()['clockwork maid']) {
         Lib.use(1, Item.get('clockwork maid'));
       }
-
-      (0, _dailyLib.fillAllSpleen)();
     }
 
     Lib.cliExecute('beachcomber free');
