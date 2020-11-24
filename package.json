@@ -8,7 +8,7 @@
     "postinstall": "patch-package",
     "build": "npm run build:types && npm run build:js",
     "build:types": "tsc",
-    "build:js": "babel src --out-dir build --extensions \".ts\"",
+    "build:js": "babel src --out-dir build/scripts/bean-daily --extensions \".ts\"",
     "lint": "gts lint",
     "clean": "gts clean",
     "compile": "tsc",
