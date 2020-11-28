@@ -26,6 +26,42 @@ exports.fillStomach = fillStomach;
 exports.fillLiver = fillLiver;
 exports.MPA = void 0;
 
+var _kolmafia = require("kolmafia");
+
+var _src = require("libram/src");
+
+function _templateObject3() {
+  var data = _taggedTemplateLiteral(["voodoo snuff"]);
+
+  _templateObject3 = function _templateObject3() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject2() {
+  var data = _taggedTemplateLiteral(["voodoo snuff"]);
+
+  _templateObject2 = function _templateObject2() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject() {
+  var data = _taggedTemplateLiteral(["voodoo snuff"]);
+
+  _templateObject = function _templateObject() {
+    return data;
+  };
+
+  return data;
+}
+
+function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
@@ -50,26 +86,27 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var MPA = getPropertyInt('valueOfAdventure');
 exports.MPA = MPA;
+(0, _kolmafia.print)("Using adventure value ".concat(MPA, "."), 'blue');
 
 function clamp(n, min, max) {
   return Math.max(min, Math.min(n, max));
 }
 
 function getPropertyInt(name) {
-  var str = Lib.getProperty(name);
+  var str = (0, _kolmafia.getProperty)(name);
 
   if (str === '') {
-    Lib.abort("Unknown property ".concat(name, "."));
+    (0, _kolmafia.abort)("Unknown property ".concat(name, "."));
   }
 
   return parseInt(str, 10);
 }
 
 function getPropertyBoolean(name) {
-  var str = Lib.getProperty(name);
+  var str = (0, _kolmafia.getProperty)(name);
 
   if (str === '') {
-    Lib.abort("Unknown property ".concat(name, "."));
+    (0, _kolmafia.abort)("Unknown property ".concat(name, "."));
   }
 
   return str === 'true';
@@ -80,7 +117,7 @@ function itemPriority() {
     items[_key] = arguments[_key];
   }
 
-  if (items.length === 1) return items[0];else return Lib.itemAmount(items[0]) > 0 ? items[0] : itemPriority.apply(void 0, _toConsumableArray(items.slice(1)));
+  if (items.length === 1) return items[0];else return (0, _kolmafia.itemAmount)(items[0]) > 0 ? items[0] : itemPriority.apply(void 0, _toConsumableArray(items.slice(1)));
 }
 
 function cheaper() {
@@ -88,7 +125,7 @@ function cheaper() {
     items[_key2] = arguments[_key2];
   }
 
-  if (items.length === 1) return items[0];else return Lib.itemAmount(items[0]) > 0 ? items[0] : itemPriority.apply(void 0, _toConsumableArray(items.slice(1)));
+  if (items.length === 1) return items[0];else return (0, _kolmafia.itemAmount)(items[0]) > 0 ? items[0] : itemPriority.apply(void 0, _toConsumableArray(items.slice(1)));
 }
 
 var priceCaps = {
@@ -98,25 +135,24 @@ var priceCaps = {
   "Ol' Scratch's salad fork": 45000,
   'transdermal smoke patch': 7000,
   'voodoo snuff': 36000,
-  'blood-drive sticker': 210000
+  'blood-drive sticker': 210000,
+  'spice melange': 500000,
+  'splendid martini': 10000
 };
 
 function getCapped(qty, item, maxPrice) {
-  if (qty > 15) Lib.abort('bad get!');
-  var remaining = qty - Lib.itemAmount(item);
+  if (qty > 15) (0, _kolmafia.abort)('bad get!');
+  var remaining = qty - (0, _kolmafia.itemAmount)(item);
   if (remaining <= 0) return;
-  var getCloset = Math.min(remaining, Lib.closetAmount(item));
-  if (!Lib.takeCloset(getCloset, item)) Lib.abort('failed to remove from closet');
+  var getCloset = Math.min(remaining, (0, _kolmafia.closetAmount)(item));
+  if (!(0, _kolmafia.takeCloset)(getCloset, item)) (0, _kolmafia.abort)('failed to remove from closet');
   remaining -= getCloset;
   if (remaining <= 0) return;
-  var getMall = Math.min(remaining, Lib.shopAmount(item));
-  if (!Lib.takeShop(getMall, item)) Lib.abort('failed to remove from shop');
+  var getMall = Math.min(remaining, (0, _kolmafia.shopAmount)(item));
+  if (!(0, _kolmafia.takeShop)(getMall, item)) (0, _kolmafia.abort)('failed to remove from shop');
   remaining -= getMall;
   if (remaining <= 0) return;
-
-  if (!Lib.retrieveItem(remaining, item)) {
-    if (Lib.buy(remaining, item, maxPrice) < remaining) Lib.abort('Mall price too high for {it.name}.');
-  }
+  if ((0, _kolmafia.buy)(remaining, item, maxPrice) < remaining) (0, _kolmafia.abort)('Mall price too high for {it.name}.');
 }
 
 function get(qty, item) {
@@ -125,26 +161,26 @@ function get(qty, item) {
 
 function eatSafe(qty, item) {
   get(1, item);
-  if (!Lib.eat(qty, item)) Lib.abort('Failed to eat safely');
+  if (!(0, _kolmafia.eat)(qty, item)) (0, _kolmafia.abort)('Failed to eat safely');
 }
 
 function drinkSafe(qty, item) {
   get(1, item);
-  if (!Lib.drink(qty, item)) Lib.abort('Failed to drink safely');
+  if (!(0, _kolmafia.drink)(qty, item)) (0, _kolmafia.abort)('Failed to drink safely');
 }
 
 function chewSafe(qty, item) {
   get(1, item);
-  if (!Lib.chew(qty, item)) Lib.abort('Failed to chew safely');
+  if (!(0, _kolmafia.chew)(qty, item)) (0, _kolmafia.abort)('Failed to chew safely');
 }
 
 function eatSpleen(qty, item) {
-  if (Lib.mySpleenUse() < 5) Lib.abort('No spleen to clear with this.');
+  if ((0, _kolmafia.mySpleenUse)() < 5) (0, _kolmafia.abort)('No spleen to clear with this.');
   eatSafe(qty, item);
 }
 
 function drinkSpleen(qty, item) {
-  if (Lib.mySpleenUse() < 5) Lib.abort('No spleen to clear with this.');
+  if ((0, _kolmafia.mySpleenUse)() < 5) (0, _kolmafia.abort)('No spleen to clear with this.');
   drinkSafe(qty, item);
 }
 
@@ -173,29 +209,36 @@ function propTrue(prop) {
 
 function useIfUnused(item, prop, maxPrice) {
   if (!propTrue(prop)) {
-    if (Lib.mallPrice(item) <= maxPrice) {
+    if ((0, _kolmafia.mallPrice)(item) <= maxPrice) {
       getCapped(1, item, maxPrice);
-      Lib.use(1, item);
+      (0, _kolmafia.use)(1, item);
     } else {
-      Lib.print("Skipping ".concat(item.name, "; too expensive (").concat(Lib.mallPrice(item), " > ").concat(maxPrice, ")."));
+      (0, _kolmafia.print)("Skipping ".concat(item.name, "; too expensive (").concat((0, _kolmafia.mallPrice)(item), " > ").concat(maxPrice, ")."));
     }
   }
 }
 
 function totalAmount(item) {
-  return Lib.shopAmount(item) + Lib.itemAmount(item);
+  return (0, _kolmafia.shopAmount)(item) + (0, _kolmafia.itemAmount)(item);
 }
 
-function ensureOde(turns) {
-  while (Lib.haveEffect(Effect.get('Ode to Booze')) < turns) {
-    if (!Lib.useSkill(Skill.get('The Ode to Booze'))) Lib.abort('Could not get Ode for some reason.');
+function ensureOde() {
+  var turns = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+  var skill = Skill.get('The Ode to Booze');
+  var effect = (0, _kolmafia.toEffect)(skill);
+
+  if ((0, _kolmafia.haveSkill)(skill) && effect !== Effect.get('none') && (0, _kolmafia.haveEffect)(effect) < turns) {
+    var casts = Math.ceil((turns - (0, _kolmafia.haveEffect)(effect)) / (0, _kolmafia.turnsPerCast)(skill));
+    (0, _kolmafia.useSkill)(clamp(casts, 1, 100), skill);
   }
+
+  if ((0, _kolmafia.haveEffect)(effect) < turns) throw 'Could not get Ode for some reason.';
 }
 
 var potentialSpleenItems = Item.get(['transdermal smoke patch', 'voodoo snuff', 'blood-drive sticker']);
 
 var keyF = function keyF(item) {
-  return -(adventureGain(item) * MPA - Lib.mallPrice(item)) / item.spleen;
+  return -(adventureGain(item) * MPA - (0, _kolmafia.mallPrice)(item)) / item.spleen;
 };
 
 potentialSpleenItems.sort(function (x, y) {
@@ -203,58 +246,74 @@ potentialSpleenItems.sort(function (x, y) {
 });
 var bestSpleenItem = potentialSpleenItems[0];
 
-if (bestSpleenItem.name === 'blood-drive sticker' && totalAmount(Item.get('voodoo snuff')) > 100 && totalAmount(Item.get('blood-drive sticker')) < 6) {
+var _iterator = _createForOfIteratorHelper(potentialSpleenItems),
+    _step;
+
+try {
+  for (_iterator.s(); !(_step = _iterator.n()).done;) {
+    var spleenItem = _step.value;
+    (0, _kolmafia.print)("".concat(spleenItem, " value/spleen: ").concat(-keyF(spleenItem)));
+  }
+} catch (err) {
+  _iterator.e(err);
+} finally {
+  _iterator.f();
+}
+
+if (bestSpleenItem.name === 'blood-drive sticker' && totalAmount(Item.get('voodoo snuff')) > 50 && totalAmount(Item.get('blood-drive sticker')) < 6) {
   // Override if we have too many to sell.
   bestSpleenItem = Item.get('voodoo snuff');
+} else if (keyF(bestSpleenItem) - keyF((0, _src.$item)(_templateObject())) < 300 && totalAmount((0, _src.$item)(_templateObject2())) > 50) {
+  bestSpleenItem = (0, _src.$item)(_templateObject3());
 }
 
 function fillSomeSpleen() {
+  (0, _kolmafia.print)("Spleen item: ".concat(bestSpleenItem));
   fillSpleenWith(bestSpleenItem);
 }
 
 function fillAllSpleen() {
-  var _iterator = _createForOfIteratorHelper(potentialSpleenItems),
-      _step;
+  var _iterator2 = _createForOfIteratorHelper(potentialSpleenItems),
+      _step2;
 
   try {
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
-      var spleenItem = _step.value;
+    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+      var spleenItem = _step2.value;
+      (0, _kolmafia.print)("Filling spleen with ".concat(spleenItem, "."));
       fillSpleenWith(spleenItem);
     }
   } catch (err) {
-    _iterator.e(err);
+    _iterator2.e(err);
   } finally {
-    _iterator.f();
+    _iterator2.f();
   }
 }
 
 function fillSpleenWith(spleenItem) {
-  Lib.print("Spleen item: ".concat(spleenItem));
-
-  if (Lib.mySpleenUse() + spleenItem.spleen <= Lib.spleenLimit()) {
-    var count = (Lib.spleenLimit() - Lib.mySpleenUse()) / spleenItem.spleen;
+  if ((0, _kolmafia.mySpleenUse)() + spleenItem.spleen <= (0, _kolmafia.spleenLimit)()) {
+    var count = ((0, _kolmafia.spleenLimit)() - (0, _kolmafia.mySpleenUse)()) / spleenItem.spleen;
     chewSafe(count, spleenItem);
   }
 }
 
 function fillStomach() {
-  if (Lib.myLevel() >= 15 && !getPropertyBoolean('_hungerSauceUsed') && Lib.mallPrice(Item.get('Hunger&trade; sauce')) < 3 * MPA) {
+  if ((0, _kolmafia.myLevel)() >= 15 && !getPropertyBoolean('_hungerSauceUsed') && (0, _kolmafia.mallPrice)(Item.get('Hunger&trade; sauce')) < 3 * MPA) {
     getCapped(1, Item.get('Hunger&trade; sauce'), 3 * MPA);
-    Lib.use(1, Item.get('Hunger&trade; sauce'));
+    (0, _kolmafia.use)(1, Item.get('Hunger&trade; sauce'));
   }
 
   if (!getPropertyBoolean('_milkOfMagnesiumUsed')) {
-    Lib.use(1, Item.get('milk of magnesium'));
+    (0, _kolmafia.use)(1, Item.get('milk of magnesium'));
   } // Save space for marketplace food.
 
 
-  while (Lib.myFullness() + 5 <= Lib.fullnessLimit()) {
-    if (Lib.myMaxhp() < 1000) {
-      Lib.maximize('hot res', false);
+  while ((0, _kolmafia.myFullness)() + 5 <= (0, _kolmafia.fullnessLimit)()) {
+    if ((0, _kolmafia.myMaxhp)() < 1000) {
+      (0, _kolmafia.maximize)('hot res', false);
     }
 
-    var count = Math.min((Lib.fullnessLimit() - Lib.myFullness()) / 5, Lib.mySpleenUse() / 5);
-    Lib.restoreHp(Lib.myMaxhp());
+    var count = Math.min(((0, _kolmafia.fullnessLimit)() - (0, _kolmafia.myFullness)()) / 5, (0, _kolmafia.mySpleenUse)() / 5);
+    (0, _kolmafia.restoreHp)((0, _kolmafia.myMaxhp)());
     get(count, Item.get('extra-greasy slider'));
     get(count, Item.get("Ol' Scratch's salad fork"));
     getCapped(count, Item.get('special seasoning'), 5000);
@@ -265,29 +324,29 @@ function fillStomach() {
 }
 
 function fillLiver() {
-  if (!getPropertyBoolean('_mimeArmyShotglassUsed') && Lib.itemAmount(Item.get('mime army shotglass')) > 0) {
-    Lib.equip(Item.get('tuxedo shirt'));
-    Lib.drink(1, itemPriority(Item.get('astral pilsner'), Item.get('splendid martini')));
+  if (!getPropertyBoolean('_mimeArmyShotglassUsed') && (0, _kolmafia.itemAmount)(Item.get('mime army shotglass')) > 0) {
+    (0, _kolmafia.equip)(Item.get('tuxedo shirt'));
+    (0, _kolmafia.drink)(1, itemPriority(Item.get('astral pilsner'), Item.get('splendid martini')));
   }
 
-  while (Lib.myInebriety() + 1 <= Lib.inebrietyLimit() && Lib.itemAmount(Item.get('astral pilsner')) > 0) {
-    while (Lib.haveEffect(Effect.get('Ode to Booze')) < 1) {
-      Lib.useSkill(Skill.get('The Ode to Booze'));
+  while ((0, _kolmafia.myInebriety)() + 1 <= (0, _kolmafia.inebrietyLimit)() && (0, _kolmafia.itemAmount)(Item.get('astral pilsner')) > 0) {
+    while ((0, _kolmafia.haveEffect)(Effect.get('Ode to Booze')) < 1) {
+      (0, _kolmafia.useSkill)(Skill.get('The Ode to Booze'));
     }
 
-    Lib.drink(1, Item.get('astral pilsner'));
+    (0, _kolmafia.drink)(1, Item.get('astral pilsner'));
   }
 
-  while (Lib.myInebriety() + 5 <= Lib.inebrietyLimit()) {
-    if (Lib.myMaxhp() < 1000) {
-      Lib.maximize('0.05hp, cold res', false);
+  while ((0, _kolmafia.myInebriety)() + 5 <= (0, _kolmafia.inebrietyLimit)()) {
+    if ((0, _kolmafia.myMaxhp)() < 1000) {
+      (0, _kolmafia.maximize)('0.05hp, cold res', false);
     }
 
-    var count = Math.min((Lib.inebrietyLimit() - Lib.myInebriety()) / 5, Lib.mySpleenUse() / 5);
-    Lib.restoreHp(Lib.myMaxhp());
+    var count = Math.min(((0, _kolmafia.inebrietyLimit)() - (0, _kolmafia.myInebriety)()) / 5, (0, _kolmafia.mySpleenUse)() / 5);
+    (0, _kolmafia.restoreHp)((0, _kolmafia.myMaxhp)());
 
-    while (Lib.haveEffect(Effect.get('Ode to Booze')) < count * 5) {
-      Lib.useSkill(Skill.get('The Ode to Booze'));
+    while ((0, _kolmafia.haveEffect)(Effect.get('Ode to Booze')) < count * 5) {
+      (0, _kolmafia.useSkill)(Skill.get('The Ode to Booze'));
     }
 
     get(count, Item.get('jar of fermented pickle juice'));

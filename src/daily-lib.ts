@@ -1,33 +1,68 @@
+import {
+  print,
+  getProperty,
+  abort,
+  itemAmount,
+  closetAmount,
+  takeCloset,
+  shopAmount,
+  takeShop,
+  buy,
+  eat,
+  drink,
+  chew,
+  mySpleenUse,
+  mallPrice,
+  use,
+  toEffect,
+  haveSkill,
+  haveEffect,
+  turnsPerCast,
+  useSkill,
+  spleenLimit,
+  myLevel,
+  myFullness,
+  fullnessLimit,
+  myMaxhp,
+  maximize,
+  restoreHp,
+  equip,
+  myInebriety,
+  inebrietyLimit,
+} from 'kolmafia';
+import {$effect, $item, $items, $skill} from 'libram/src';
+
 export const MPA = getPropertyInt('valueOfAdventure');
+print(`Using adventure value ${MPA}.`, 'blue');
 
 export function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(n, max));
 }
 
 export function getPropertyInt(name: string): number {
-  const str = Lib.getProperty(name);
+  const str = getProperty(name);
   if (str === '') {
-    Lib.abort(`Unknown property ${name}.`);
+    abort(`Unknown property ${name}.`);
   }
   return parseInt(str, 10);
 }
 
 export function getPropertyBoolean(name: string) {
-  const str = Lib.getProperty(name);
+  const str = getProperty(name);
   if (str === '') {
-    Lib.abort(`Unknown property ${name}.`);
+    abort(`Unknown property ${name}.`);
   }
   return str === 'true';
 }
 
 export function itemPriority(...items: Item[]): Item {
   if (items.length === 1) return items[0];
-  else return Lib.itemAmount(items[0]) > 0 ? items[0] : itemPriority(...items.slice(1));
+  else return itemAmount(items[0]) > 0 ? items[0] : itemPriority(...items.slice(1));
 }
 
 export function cheaper(...items: Item[]) {
   if (items.length === 1) return items[0];
-  else return Lib.itemAmount(items[0]) > 0 ? items[0] : itemPriority(...items.slice(1));
+  else return itemAmount(items[0]) > 0 ? items[0] : itemPriority(...items.slice(1));
 }
 
 const priceCaps: {[index: string]: number} = {
@@ -38,27 +73,27 @@ const priceCaps: {[index: string]: number} = {
   'transdermal smoke patch': 7000,
   'voodoo snuff': 36000,
   'blood-drive sticker': 210000,
+  'spice melange': 500000,
+  'splendid martini': 10000,
 };
 
 export function getCapped(qty: number, item: Item, maxPrice: number) {
-  if (qty > 15) Lib.abort('bad get!');
+  if (qty > 15) abort('bad get!');
 
-  let remaining = qty - Lib.itemAmount(item);
+  let remaining = qty - itemAmount(item);
   if (remaining <= 0) return;
 
-  const getCloset = Math.min(remaining, Lib.closetAmount(item));
-  if (!Lib.takeCloset(getCloset, item)) Lib.abort('failed to remove from closet');
+  const getCloset = Math.min(remaining, closetAmount(item));
+  if (!takeCloset(getCloset, item)) abort('failed to remove from closet');
   remaining -= getCloset;
   if (remaining <= 0) return;
 
-  const getMall = Math.min(remaining, Lib.shopAmount(item));
-  if (!Lib.takeShop(getMall, item)) Lib.abort('failed to remove from shop');
+  const getMall = Math.min(remaining, shopAmount(item));
+  if (!takeShop(getMall, item)) abort('failed to remove from shop');
   remaining -= getMall;
   if (remaining <= 0) return;
 
-  if (!Lib.retrieveItem(remaining, item)) {
-    if (Lib.buy(remaining, item, maxPrice) < remaining) Lib.abort('Mall price too high for {it.name}.');
-  }
+  if (buy(remaining, item, maxPrice) < remaining) abort('Mall price too high for {it.name}.');
 }
 
 export function get(qty: number, item: Item) {
@@ -67,26 +102,26 @@ export function get(qty: number, item: Item) {
 
 export function eatSafe(qty: number, item: Item) {
   get(1, item);
-  if (!Lib.eat(qty, item)) Lib.abort('Failed to eat safely');
+  if (!eat(qty, item)) abort('Failed to eat safely');
 }
 
 export function drinkSafe(qty: number, item: Item) {
   get(1, item);
-  if (!Lib.drink(qty, item)) Lib.abort('Failed to drink safely');
+  if (!drink(qty, item)) abort('Failed to drink safely');
 }
 
 export function chewSafe(qty: number, item: Item) {
   get(1, item);
-  if (!Lib.chew(qty, item)) Lib.abort('Failed to chew safely');
+  if (!chew(qty, item)) abort('Failed to chew safely');
 }
 
 export function eatSpleen(qty: number, item: Item) {
-  if (Lib.mySpleenUse() < 5) Lib.abort('No spleen to clear with this.');
+  if (mySpleenUse() < 5) abort('No spleen to clear with this.');
   eatSafe(qty, item);
 }
 
 export function drinkSpleen(qty: number, item: Item) {
-  if (Lib.mySpleenUse() < 5) Lib.abort('No spleen to clear with this.');
+  if (mySpleenUse() < 5) abort('No spleen to clear with this.');
   drinkSafe(qty, item);
 }
 
@@ -109,104 +144,112 @@ function propTrue(prop: string | boolean) {
 
 export function useIfUnused(item: Item, prop: string | boolean, maxPrice: number) {
   if (!propTrue(prop)) {
-    if (Lib.mallPrice(item) <= maxPrice) {
+    if (mallPrice(item) <= maxPrice) {
       getCapped(1, item, maxPrice);
-      Lib.use(1, item);
+      use(1, item);
     } else {
-      Lib.print(`Skipping ${item.name}; too expensive (${Lib.mallPrice(item)} > ${maxPrice}).`);
+      print(`Skipping ${item.name}; too expensive (${mallPrice(item)} > ${maxPrice}).`);
     }
   }
 }
 
 export function totalAmount(item: Item): number {
-  return Lib.shopAmount(item) + Lib.itemAmount(item);
+  return shopAmount(item) + itemAmount(item);
 }
 
-export function ensureOde(turns: Number): void {
-  while (Lib.haveEffect(Effect.get('Ode to Booze')) < turns) {
-    if (!Lib.useSkill(Skill.get('The Ode to Booze'))) Lib.abort('Could not get Ode for some reason.');
+export function ensureOde(turns = 1) {
+  const skill = $skill`The Ode to Booze`;
+  const effect = toEffect(skill);
+
+  if (haveSkill(skill) && effect !== $effect`none` && haveEffect(effect) < turns) {
+    const casts = Math.ceil((turns - haveEffect(effect)) / turnsPerCast(skill));
+    useSkill(clamp(casts, 1, 100), skill);
   }
+  if (haveEffect(effect) < turns) throw 'Could not get Ode for some reason.';
 }
 
-const potentialSpleenItems: Item[] = Item.get(['transdermal smoke patch', 'voodoo snuff', 'blood-drive sticker']);
-const keyF = (item: Item) => -(adventureGain(item) * MPA - Lib.mallPrice(item)) / item.spleen;
+const potentialSpleenItems = $items`transdermal smoke patch, voodoo snuff, blood-drive sticker`;
+const keyF = (item: Item) => -(adventureGain(item) * MPA - mallPrice(item)) / item.spleen;
 potentialSpleenItems.sort((x, y) => keyF(x) - keyF(y));
 let bestSpleenItem = potentialSpleenItems[0];
+for (const spleenItem of potentialSpleenItems) {
+  print(`${spleenItem} value/spleen: ${-keyF(spleenItem)}`);
+}
 if (
   bestSpleenItem.name === 'blood-drive sticker' &&
-  totalAmount(Item.get('voodoo snuff')) > 100 &&
-  totalAmount(Item.get('blood-drive sticker')) < 6
+  totalAmount($item`voodoo snuff`) > 50 &&
+  totalAmount($item`blood-drive sticker`) < 6
 ) {
   // Override if we have too many to sell.
-  bestSpleenItem = Item.get('voodoo snuff');
+  bestSpleenItem = $item`voodoo snuff`;
+} else if (keyF(bestSpleenItem) - keyF($item`voodoo snuff`) < 300 && totalAmount($item`voodoo snuff`) > 50) {
+  bestSpleenItem = $item`voodoo snuff`;
 }
 
 export function fillSomeSpleen() {
+  print(`Spleen item: ${bestSpleenItem}`);
   fillSpleenWith(bestSpleenItem);
 }
 
 export function fillAllSpleen(): void {
   for (const spleenItem of potentialSpleenItems) {
+    print(`Filling spleen with ${spleenItem}.`);
     fillSpleenWith(spleenItem);
   }
 }
 
 export function fillSpleenWith(spleenItem: Item) {
-  Lib.print(`Spleen item: ${spleenItem}`);
-  if (Lib.mySpleenUse() + spleenItem.spleen <= Lib.spleenLimit()) {
-    const count = (Lib.spleenLimit() - Lib.mySpleenUse()) / spleenItem.spleen;
+  if (mySpleenUse() + spleenItem.spleen <= spleenLimit()) {
+    const count = (spleenLimit() - mySpleenUse()) / spleenItem.spleen;
+    get(count, spleenItem);
     chewSafe(count, spleenItem);
   }
 }
 
 export function fillStomach() {
-  if (
-    Lib.myLevel() >= 15 &&
-    !getPropertyBoolean('_hungerSauceUsed') &&
-    Lib.mallPrice(Item.get('Hunger&trade; sauce')) < 3 * MPA
-  ) {
-    getCapped(1, Item.get('Hunger&trade; sauce'), 3 * MPA);
-    Lib.use(1, Item.get('Hunger&trade; sauce'));
+  if (myLevel() >= 15 && !getPropertyBoolean('_hungerSauceUsed') && mallPrice($item`Hunger&trade; sauce`) < 3 * MPA) {
+    getCapped(1, $item`Hunger&trade; sauce`, 3 * MPA);
+    use(1, $item`Hunger&trade; sauce`);
   }
   if (!getPropertyBoolean('_milkOfMagnesiumUsed')) {
-    Lib.use(1, Item.get('milk of magnesium'));
+    use(1, $item`milk of magnesium`);
   }
   // Save space for marketplace food.
-  while (Lib.myFullness() + 5 <= Lib.fullnessLimit()) {
-    if (Lib.myMaxhp() < 1000) {
-      Lib.maximize('hot res', false);
+  while (myFullness() + 5 <= fullnessLimit()) {
+    if (myMaxhp() < 1000) {
+      maximize('hot res', false);
     }
-    const count = Math.min((Lib.fullnessLimit() - Lib.myFullness()) / 5, Lib.mySpleenUse() / 5);
-    Lib.restoreHp(Lib.myMaxhp());
-    get(count, Item.get('extra-greasy slider'));
-    get(count, Item.get("Ol' Scratch's salad fork"));
-    getCapped(count, Item.get('special seasoning'), 5000);
-    eatSpleen(count, Item.get("Ol' Scratch's salad fork"));
-    eatSpleen(count, Item.get('extra-greasy slider'));
+    const count = Math.min((fullnessLimit() - myFullness()) / 5, mySpleenUse() / 5);
+    restoreHp(myMaxhp());
+    get(count, $item`extra-greasy slider`);
+    get(count, $item`Ol' Scratch's salad fork`);
+    getCapped(count, $item`special seasoning`, 5000);
+    eatSpleen(count, $item`Ol' Scratch's salad fork`);
+    eatSpleen(count, $item`extra-greasy slider`);
     fillSomeSpleen();
   }
 }
 
 export function fillLiver() {
-  if (!getPropertyBoolean('_mimeArmyShotglassUsed') && Lib.itemAmount(Item.get('mime army shotglass')) > 0) {
-    Lib.equip(Item.get('tuxedo shirt'));
-    Lib.drink(1, itemPriority(Item.get('astral pilsner'), Item.get('splendid martini')));
+  if (!getPropertyBoolean('_mimeArmyShotglassUsed') && itemAmount($item`mime army shotglass`) > 0) {
+    equip($item`tuxedo shirt`);
+    drink(1, itemPriority($item`astral pilsner`, $item`splendid martini`));
   }
-  while (Lib.myInebriety() + 1 <= Lib.inebrietyLimit() && Lib.itemAmount(Item.get('astral pilsner')) > 0) {
-    while (Lib.haveEffect(Effect.get('Ode to Booze')) < 1) Lib.useSkill(Skill.get('The Ode to Booze'));
-    Lib.drink(1, Item.get('astral pilsner'));
+  while (myInebriety() + 1 <= inebrietyLimit() && itemAmount($item`astral pilsner`) > 0) {
+    ensureOde(1);
+    drink(1, $item`astral pilsner`);
   }
-  while (Lib.myInebriety() + 5 <= Lib.inebrietyLimit()) {
-    if (Lib.myMaxhp() < 1000) {
-      Lib.maximize('0.05hp, cold res', false);
+  while (myInebriety() + 5 <= inebrietyLimit()) {
+    if (myMaxhp() < 1000) {
+      maximize('0.05hp, cold res', false);
     }
-    const count = Math.min((Lib.inebrietyLimit() - Lib.myInebriety()) / 5, Lib.mySpleenUse() / 5);
-    Lib.restoreHp(Lib.myMaxhp());
-    while (Lib.haveEffect(Effect.get('Ode to Booze')) < count * 5) Lib.useSkill(Skill.get('The Ode to Booze'));
-    get(count, Item.get('jar of fermented pickle juice'));
-    get(count, Item.get("Frosty's frosty mug"));
-    drinkSpleen(count, Item.get("Frosty's frosty mug"));
-    drinkSpleen(count, Item.get('jar of fermented pickle juice'));
+    const count = Math.min((inebrietyLimit() - myInebriety()) / 5, mySpleenUse() / 5);
+    restoreHp(myMaxhp());
+    ensureOde(count * 5);
+    get(count, $item`jar of fermented pickle juice`);
+    get(count, $item`Frosty's frosty mug`);
+    drinkSpleen(count, $item`Frosty's frosty mug`);
+    drinkSpleen(count, $item`jar of fermented pickle juice`);
     fillSomeSpleen();
   }
 }

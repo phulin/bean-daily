@@ -1,72 +1,92 @@
+import {
+  inebrietyLimit,
+  myFamiliar,
+  myInebriety,
+  myFullness,
+  fullnessLimit,
+  abort,
+  getProperty,
+  retrieveItem,
+  reverseNumberology,
+  cliExecute,
+  eat,
+  use,
+  print,
+  useFamiliar,
+  equip,
+  maximize,
+  buy,
+  getCampground,
+  create,
+} from 'kolmafia';
+import {$familiar, $item} from 'libram/src';
 import {drinkSafe, drinkSpleen, ensureOde, fillAllSpleen, getPropertyInt} from './daily-lib';
 
 function normalLimit(): number {
-  return Lib.inebrietyLimit() - (Lib.myFamiliar() === Familiar.get('Stooper') ? 1 : 0);
+  return inebrietyLimit() - (myFamiliar() === $familiar`Stooper` ? 1 : 0);
 }
 
-export function main(args: string) {
-  if (args === undefined) args = '';
-
-  if (Lib.myInebriety() < normalLimit() || Lib.myFullness() < Lib.fullnessLimit()) {
-    Lib.abort('Make sure organs are full first.');
+export function main(args = '') {
+  if (myInebriety() < normalLimit() || myFullness() < fullnessLimit()) {
+    abort('Make sure organs are full first.');
   }
 
   let sausagesEaten = getPropertyInt('_sausagesEaten');
-  const borrowTime = Lib.getProperty('_borrowedTimeUsed') !== 'true' && args.includes('ascend');
+  const borrowTime = getProperty('_borrowedTimeUsed') !== 'true' && args.includes('ascend');
   if (sausagesEaten < 23 || borrowTime) {
     let count = Math.max(23 - sausagesEaten, 0);
-    Lib.retrieveItem(count, Item.get('magical sausage'));
+    retrieveItem(count, $item`magical sausage`);
     for (let i = 0; i < count; i++) {
       while (
-        Lib.reverseNumberology()['69'] !== undefined &&
+        reverseNumberology()['69'] !== undefined &&
         getPropertyInt('_universeCalculated') < getPropertyInt('skillLevel144')
       ) {
-        Lib.cliExecute('numberology 69');
+        cliExecute('numberology 69');
       }
       if (getPropertyInt('_universeCalculated') >= getPropertyInt('skillLevel144')) break;
-      Lib.eat(1, Item.get('magical sausage'));
+      eat(1, $item`magical sausage`);
     }
     sausagesEaten = getPropertyInt('_sausagesEaten');
     count = Math.max(23 - sausagesEaten, 0);
-    Lib.eat(count, Item.get('magical sausage'));
-    if (borrowTime) Lib.use(1, Item.get('borrowed time'));
+    eat(count, $item`magical sausage`);
+    if (borrowTime) use(1, $item`borrowed time`);
 
-    Lib.print('Generated more adventures. Use these first.', 'red');
+    print('Generated more adventures. Use these first.', 'red');
   } else {
-    Lib.useFamiliar(Familiar.get('Stooper'));
-    if (Lib.myInebriety() + 1 === Lib.inebrietyLimit()) {
+    useFamiliar($familiar`Stooper`);
+    if (myInebriety() + 1 === inebrietyLimit()) {
       ensureOde(1);
-      Lib.equip(Item.get('tuxedo shirt'));
-      drinkSafe(1, Item.get('splendid martini'));
+      equip($item`tuxedo shirt`);
+      drinkSafe(1, $item`splendid martini`);
     }
 
-    if (Lib.myInebriety() === Lib.inebrietyLimit()) {
+    if (myInebriety() === inebrietyLimit()) {
       ensureOde(5);
-      drinkSafe(1, Item.get("Frosty's frosty mug"));
-      drinkSpleen(1, Item.get('jar of fermented pickle juice'));
+      drinkSafe(1, $item`Frosty's frosty mug`);
+      drinkSpleen(1, $item`jar of fermented pickle juice`);
     }
 
-    if (Lib.myInebriety() > Lib.inebrietyLimit()) {
+    if (myInebriety() > inebrietyLimit()) {
       fillAllSpleen();
     }
 
     if (!args.includes('ascend')) {
-      Lib.use(5, Item.get('resolution: be more adventurous'));
-      Lib.cliExecute('equip burning cape');
-      Lib.useFamiliar(Familiar.get('Left-Hand Man'));
-      Lib.maximize('adventures', false);
-      Lib.cliExecute('/whitelist ferengi');
+      use(5, $item`resolution: be more adventurous`);
+      equip($item`burning cape`);
+      useFamiliar($familiar`Left-Hand Man`);
+      maximize('adventures', false);
+      cliExecute('/whitelist ferengi');
 
-      Lib.buy(1, Item.get('artificial skylight'));
+      buy(1, $item`artificial skylight`);
 
-      if (!Lib.getCampground()['clockwork maid']) {
-        Lib.use(1, Item.get('clockwork maid'));
+      if (!getCampground()['clockwork maid']) {
+        use(1, $item`clockwork maid`);
       }
     }
 
-    Lib.cliExecute('beachcomber free');
+    cliExecute('beachcomber free');
 
-    Lib.create(3 - getPropertyInt('_clipartSummons'), Item.get('box of Familiar Jacks'));
-    Lib.create(3 - getPropertyInt('_sourceTerminalExtrudes'), Item.get('hacked gibson'));
+    create(3 - getPropertyInt('_clipartSummons'), $item`box of Familiar Jacks`);
+    create(3 - getPropertyInt('_sourceTerminalExtrudes'), $item`hacked gibson`);
   }
 }
