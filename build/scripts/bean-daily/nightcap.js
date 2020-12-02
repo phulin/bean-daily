@@ -416,28 +416,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kolmafia */ "kolmafia");
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kolmafia__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var libram_src__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! libram/src */ "./node_modules/libram/src/index.ts");
-function _templateObject28() {
-  var data = _taggedTemplateLiteral(["jar of fermented pickle juice"]);
-
-  _templateObject28 = function _templateObject28() {
-    return data;
-  };
-
-  return data;
-}
-
-function _templateObject27() {
-  var data = _taggedTemplateLiteral(["Frosty's frosty mug"]);
-
-  _templateObject27 = function _templateObject27() {
-    return data;
-  };
-
-  return data;
-}
-
 function _templateObject26() {
-  var data = _taggedTemplateLiteral(["Frosty's frosty mug"]);
+  var data = _taggedTemplateLiteral(["jar of fermented pickle juice"]);
 
   _templateObject26 = function _templateObject26() {
     return data;
@@ -447,7 +427,7 @@ function _templateObject26() {
 }
 
 function _templateObject25() {
-  var data = _taggedTemplateLiteral(["jar of fermented pickle juice"]);
+  var data = _taggedTemplateLiteral(["Frosty's frosty mug"]);
 
   _templateObject25 = function _templateObject25() {
     return data;
@@ -457,7 +437,7 @@ function _templateObject25() {
 }
 
 function _templateObject24() {
-  var data = _taggedTemplateLiteral(["astral pilsner"]);
+  var data = _taggedTemplateLiteral(["Frosty's frosty mug"]);
 
   _templateObject24 = function _templateObject24() {
     return data;
@@ -467,7 +447,7 @@ function _templateObject24() {
 }
 
 function _templateObject23() {
-  var data = _taggedTemplateLiteral(["astral pilsner"]);
+  var data = _taggedTemplateLiteral(["jar of fermented pickle juice"]);
 
   _templateObject23 = function _templateObject23() {
     return data;
@@ -477,7 +457,7 @@ function _templateObject23() {
 }
 
 function _templateObject22() {
-  var data = _taggedTemplateLiteral(["splendid martini"]);
+  var data = _taggedTemplateLiteral(["astral pilsner"]);
 
   _templateObject22 = function _templateObject22() {
     return data;
@@ -497,7 +477,7 @@ function _templateObject21() {
 }
 
 function _templateObject20() {
-  var data = _taggedTemplateLiteral(["tuxedo shirt"]);
+  var data = _taggedTemplateLiteral(["splendid martini"]);
 
   _templateObject20 = function _templateObject20() {
     return data;
@@ -507,7 +487,7 @@ function _templateObject20() {
 }
 
 function _templateObject19() {
-  var data = _taggedTemplateLiteral(["mime army shotglass"]);
+  var data = _taggedTemplateLiteral(["astral pilsner"]);
 
   _templateObject19 = function _templateObject19() {
     return data;
@@ -517,7 +497,7 @@ function _templateObject19() {
 }
 
 function _templateObject18() {
-  var data = _taggedTemplateLiteral(["extra-greasy slider"]);
+  var data = _taggedTemplateLiteral(["tuxedo shirt"]);
 
   _templateObject18 = function _templateObject18() {
     return data;
@@ -527,7 +507,7 @@ function _templateObject18() {
 }
 
 function _templateObject17() {
-  var data = _taggedTemplateLiteral(["Ol' Scratch's salad fork"]);
+  var data = _taggedTemplateLiteral(["mime army shotglass"]);
 
   _templateObject17 = function _templateObject17() {
     return data;
@@ -537,7 +517,7 @@ function _templateObject17() {
 }
 
 function _templateObject16() {
-  var data = _taggedTemplateLiteral(["special seasoning"]);
+  var data = _taggedTemplateLiteral(["extra-greasy slider"]);
 
   _templateObject16 = function _templateObject16() {
     return data;
@@ -557,7 +537,7 @@ function _templateObject15() {
 }
 
 function _templateObject14() {
-  var data = _taggedTemplateLiteral(["extra-greasy slider"]);
+  var data = _taggedTemplateLiteral(["special seasoning"]);
 
   _templateObject14 = function _templateObject14() {
     return data;
@@ -567,7 +547,7 @@ function _templateObject14() {
 }
 
 function _templateObject13() {
-  var data = _taggedTemplateLiteral(["milk of magnesium"]);
+  var data = _taggedTemplateLiteral(["Ol' Scratch's salad fork"]);
 
   _templateObject13 = function _templateObject13() {
     return data;
@@ -577,7 +557,7 @@ function _templateObject13() {
 }
 
 function _templateObject12() {
-  var data = _taggedTemplateLiteral(["Hunger&trade; sauce"]);
+  var data = _taggedTemplateLiteral(["extra-greasy slider"]);
 
   _templateObject12 = function _templateObject12() {
     return data;
@@ -587,7 +567,7 @@ function _templateObject12() {
 }
 
 function _templateObject11() {
-  var data = _taggedTemplateLiteral(["Hunger&trade; sauce"]);
+  var data = _taggedTemplateLiteral(["milk of magnesium"]);
 
   _templateObject11 = function _templateObject11() {
     return data;
@@ -607,7 +587,7 @@ function _templateObject10() {
 }
 
 function _templateObject9() {
-  var data = _taggedTemplateLiteral(["voodoo snuff"]);
+  var data = _taggedTemplateLiteral(["Hunger&trade; sauce"]);
 
   _templateObject9 = function _templateObject9() {
     return data;
@@ -617,7 +597,7 @@ function _templateObject9() {
 }
 
 function _templateObject8() {
-  var data = _taggedTemplateLiteral(["voodoo snuff"]);
+  var data = _taggedTemplateLiteral(["Hunger&trade; sauce"]);
 
   _templateObject8 = function _templateObject8() {
     return data;
@@ -656,8 +636,10 @@ function _templateObject5() {
   return data;
 }
 
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
 function _templateObject4() {
-  var data = _taggedTemplateLiteral(["voodoo snuff"]);
+  var data = _taggedTemplateLiteral(["transdermal smoke patch, voodoo snuff, blood-drive sticker"]);
 
   _templateObject4 = function _templateObject4() {
     return data;
@@ -666,10 +648,8 @@ function _templateObject4() {
   return data;
 }
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-
 function _templateObject3() {
-  var data = _taggedTemplateLiteral(["transdermal smoke patch, voodoo snuff, blood-drive sticker"]);
+  var data = _taggedTemplateLiteral(["voodoo snuff"]);
 
   _templateObject3 = function _templateObject3() {
     return data;
@@ -771,7 +751,7 @@ var priceCaps = {
   'splendid martini': 10000
 };
 function getCapped(qty, item, maxPrice) {
-  if (qty > 15) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)('bad get!');
+  if (qty * (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)(item) > 1000000) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)('bad get!');
   var remaining = qty - (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.itemAmount)(item);
   if (remaining <= 0) return;
   var getCloset = Math.min(remaining, (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.closetAmount)(item));
@@ -779,10 +759,18 @@ function getCapped(qty, item, maxPrice) {
   remaining -= getCloset;
   if (remaining <= 0) return;
   var getMall = Math.min(remaining, (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.shopAmount)(item));
-  if (!(0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.takeShop)(getMall, item)) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)('failed to remove from shop');
+
+  if (!(0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.takeShop)(getMall, item)) {
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)('refresh shop');
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)('refresh inventory');
+    remaining = qty - (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.itemAmount)(item);
+    getMall = Math.min(remaining, (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.shopAmount)(item));
+    if (!(0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.takeShop)(getMall, item)) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)('failed to remove from shop');
+  }
+
   remaining -= getMall;
   if (remaining <= 0) return;
-  if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.buy)(remaining, item, maxPrice) < remaining) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)('Mall price too high for {it.name}.');
+  if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.buy)(remaining, item, maxPrice) < remaining) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)("Mall price too high for ".concat(item.name, "."));
 }
 function get(qty, item) {
   getCapped(qty, item, priceCaps[item.name]);
@@ -855,43 +843,70 @@ function ensureOde() {
 
   if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)(effect) < turns) throw 'Could not get Ode for some reason.';
 }
-var potentialSpleenItems = (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$items)(_templateObject3());
+var snuff = (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject3());
 
-var keyF = function keyF(item) {
+var valuePerSpleen = function valuePerSpleen(item) {
   return -(adventureGain(item) * MPA - (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)(item)) / item.spleen;
 };
 
-potentialSpleenItems.sort(function (x, y) {
-  return keyF(x) - keyF(y);
-});
-var bestSpleenItem = potentialSpleenItems[0];
+var savedBestSpleenItem = null;
+var savedPotentialSpleenItems = null;
 
-var _iterator = _createForOfIteratorHelper(potentialSpleenItems),
-    _step;
-
-try {
-  for (_iterator.s(); !(_step = _iterator.n()).done;) {
-    var spleenItem = _step.value;
-    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("".concat(spleenItem, " value/spleen: ").concat(-keyF(spleenItem)));
+function getBestSpleenItems() {
+  if (savedBestSpleenItem !== null && savedPotentialSpleenItems !== null) {
+    return {
+      bestSpleenItem: savedBestSpleenItem,
+      potentialSpleenItems: savedPotentialSpleenItems
+    };
   }
-} catch (err) {
-  _iterator.e(err);
-} finally {
-  _iterator.f();
-}
 
-if (bestSpleenItem.name === 'blood-drive sticker' && totalAmount((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject4())) > 50 && totalAmount((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject5())) < 6) {
-  // Override if we have too many to sell.
-  bestSpleenItem = (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject6());
-} else if (keyF(bestSpleenItem) - keyF((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject7())) < 300 && totalAmount((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject8())) > 50) {
-  bestSpleenItem = (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject9());
+  savedPotentialSpleenItems = (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$items)(_templateObject4());
+  savedPotentialSpleenItems.sort(function (x, y) {
+    return valuePerSpleen(x) - valuePerSpleen(y);
+  });
+
+  var _iterator = _createForOfIteratorHelper(savedPotentialSpleenItems),
+      _step;
+
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var spleenItem = _step.value;
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("".concat(spleenItem, " value/spleen: ").concat(-valuePerSpleen(spleenItem)));
+    }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+
+  savedBestSpleenItem = savedPotentialSpleenItems[0];
+
+  if (savedBestSpleenItem.name === 'blood-drive sticker' && totalAmount(snuff) > 50 && totalAmount((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject5())) < 6) {
+    // Override if we have too many to sell.
+    savedBestSpleenItem = (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject6());
+  } else if (valuePerSpleen(savedBestSpleenItem) - valuePerSpleen(snuff) < 300 && totalAmount(snuff) > 50) {
+    savedBestSpleenItem = (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject7());
+  }
+
+  savedPotentialSpleenItems.splice(savedPotentialSpleenItems.indexOf(savedBestSpleenItem), 1);
+  savedPotentialSpleenItems.splice(0, 0, savedBestSpleenItem);
+  return {
+    bestSpleenItem: savedBestSpleenItem,
+    potentialSpleenItems: savedPotentialSpleenItems
+  };
 }
 
 function fillSomeSpleen() {
+  var _getBestSpleenItems = getBestSpleenItems(),
+      bestSpleenItem = _getBestSpleenItems.bestSpleenItem;
+
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("Spleen item: ".concat(bestSpleenItem));
   fillSpleenWith(bestSpleenItem);
 }
 function fillAllSpleen() {
+  var _getBestSpleenItems2 = getBestSpleenItems(),
+      potentialSpleenItems = _getBestSpleenItems2.potentialSpleenItems;
+
   var _iterator2 = _createForOfIteratorHelper(potentialSpleenItems),
       _step2;
 
@@ -909,19 +924,19 @@ function fillAllSpleen() {
 }
 function fillSpleenWith(spleenItem) {
   if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mySpleenUse)() + spleenItem.spleen <= (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.spleenLimit)()) {
-    var count = ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.spleenLimit)() - (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mySpleenUse)()) / spleenItem.spleen;
+    var count = Math.floor(((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.spleenLimit)() - (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mySpleenUse)()) / spleenItem.spleen);
     get(count, spleenItem);
     chewSafe(count, spleenItem);
   }
 }
 function fillStomach() {
-  if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myLevel)() >= 15 && !getPropertyBoolean('_hungerSauceUsed') && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject10())) < 3 * MPA) {
-    getCapped(1, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject11()), 3 * MPA);
-    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)(1, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject12()));
+  if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myLevel)() >= 15 && !getPropertyBoolean('_hungerSauceUsed') && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject8())) < 3 * MPA) {
+    getCapped(1, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject9()), 3 * MPA);
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)(1, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject10()));
   }
 
   if (!getPropertyBoolean('_milkOfMagnesiumUsed')) {
-    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)(1, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject13()));
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)(1, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject11()));
   } // Save space for marketplace food.
 
 
@@ -932,23 +947,23 @@ function fillStomach() {
 
     var count = Math.min(((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.fullnessLimit)() - (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myFullness)()) / 5, (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mySpleenUse)() / 5);
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.restoreHp)((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myMaxhp)());
-    get(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject14()));
-    get(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject15()));
-    getCapped(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject16()), 5000);
-    eatSpleen(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject17()));
-    eatSpleen(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject18()));
+    get(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject12()));
+    get(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject13()));
+    getCapped(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject14()), 5000);
+    eatSpleen(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject15()));
+    eatSpleen(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject16()));
     fillSomeSpleen();
   }
 }
 function fillLiver() {
-  if (!getPropertyBoolean('_mimeArmyShotglassUsed') && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.itemAmount)((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject19())) > 0) {
-    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.equip)((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject20()));
-    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.drink)(1, itemPriority((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject21()), (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject22())));
+  if (!getPropertyBoolean('_mimeArmyShotglassUsed') && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.itemAmount)((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject17())) > 0) {
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.equip)((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject18()));
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.drink)(1, itemPriority((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject19()), (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject20())));
   }
 
-  while ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myInebriety)() + 1 <= (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.inebrietyLimit)() && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.itemAmount)((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject23())) > 0) {
+  while ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myInebriety)() + 1 <= (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.inebrietyLimit)() && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.itemAmount)((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject21())) > 0) {
     ensureOde(1);
-    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.drink)(1, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject24()));
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.drink)(1, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject22()));
   }
 
   while ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myInebriety)() + 5 <= (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.inebrietyLimit)()) {
@@ -959,10 +974,10 @@ function fillLiver() {
     var count = Math.min(((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.inebrietyLimit)() - (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myInebriety)()) / 5, (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mySpleenUse)() / 5);
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.restoreHp)((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myMaxhp)());
     ensureOde(count * 5);
-    get(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject25()));
-    get(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject26()));
-    drinkSpleen(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject27()));
-    drinkSpleen(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject28()));
+    get(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject23()));
+    get(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject24()));
+    drinkSpleen(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject25()));
+    drinkSpleen(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$item)(_templateObject26()));
     fillSomeSpleen();
   }
 }

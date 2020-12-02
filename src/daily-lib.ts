@@ -29,8 +29,9 @@ import {
   equip,
   myInebriety,
   inebrietyLimit,
+  cliExecute,
 } from 'kolmafia';
-import {$effect, $item, $items, $skill} from 'libram/src';
+import { $effect, $item, $items, $skill } from 'libram/src';
 
 export const MPA = getPropertyInt('valueOfAdventure');
 print(`Using adventure value ${MPA}.`, 'blue');
@@ -65,7 +66,7 @@ export function cheaper(...items: Item[]) {
   else return itemAmount(items[0]) > 0 ? items[0] : itemPriority(...items.slice(1));
 }
 
-const priceCaps: {[index: string]: number} = {
+const priceCaps: { [index: string]: number } = {
   'jar of fermented pickle juice': 75000,
   "Frosty's frosty mug": 45000,
   'extra-greasy slider': 45000,
@@ -78,7 +79,7 @@ const priceCaps: {[index: string]: number} = {
 };
 
 export function getCapped(qty: number, item: Item, maxPrice: number) {
-  if (qty > 15) abort('bad get!');
+  if (qty * mallPrice(item) > 1000000) abort('bad get!');
 
   let remaining = qty - itemAmount(item);
   if (remaining <= 0) return;
@@ -88,12 +89,18 @@ export function getCapped(qty: number, item: Item, maxPrice: number) {
   remaining -= getCloset;
   if (remaining <= 0) return;
 
-  const getMall = Math.min(remaining, shopAmount(item));
-  if (!takeShop(getMall, item)) abort('failed to remove from shop');
+  let getMall = Math.min(remaining, shopAmount(item));
+  if (!takeShop(getMall, item)) {
+    cliExecute('refresh shop');
+    cliExecute('refresh inventory');
+    remaining = qty - itemAmount(item);
+    getMall = Math.min(remaining, shopAmount(item));
+    if (!takeShop(getMall, item)) abort('failed to remove from shop');
+  }
   remaining -= getMall;
   if (remaining <= 0) return;
 
-  if (buy(remaining, item, maxPrice) < remaining) abort('Mall price too high for {it.name}.');
+  if (buy(remaining, item, maxPrice) < remaining) abort(`Mall price too high for ${item.name}.`);
 }
 
 export function get(qty: number, item: Item) {
@@ -168,30 +175,44 @@ export function ensureOde(turns = 1) {
   if (haveEffect(effect) < turns) throw 'Could not get Ode for some reason.';
 }
 
-const potentialSpleenItems = $items`transdermal smoke patch, voodoo snuff, blood-drive sticker`;
-const keyF = (item: Item) => -(adventureGain(item) * MPA - mallPrice(item)) / item.spleen;
-potentialSpleenItems.sort((x, y) => keyF(x) - keyF(y));
-let bestSpleenItem = potentialSpleenItems[0];
-for (const spleenItem of potentialSpleenItems) {
-  print(`${spleenItem} value/spleen: ${-keyF(spleenItem)}`);
-}
-if (
-  bestSpleenItem.name === 'blood-drive sticker' &&
-  totalAmount($item`voodoo snuff`) > 50 &&
-  totalAmount($item`blood-drive sticker`) < 6
-) {
-  // Override if we have too many to sell.
-  bestSpleenItem = $item`voodoo snuff`;
-} else if (keyF(bestSpleenItem) - keyF($item`voodoo snuff`) < 300 && totalAmount($item`voodoo snuff`) > 50) {
-  bestSpleenItem = $item`voodoo snuff`;
+const snuff = $item`voodoo snuff`;
+const valuePerSpleen = (item: Item) => -(adventureGain(item) * MPA - mallPrice(item)) / item.spleen;
+let savedBestSpleenItem: Item | null = null;
+let savedPotentialSpleenItems: Item[] | null = null;
+function getBestSpleenItems() {
+  if (savedBestSpleenItem !== null && savedPotentialSpleenItems !== null) {
+    return { bestSpleenItem: savedBestSpleenItem, potentialSpleenItems: savedPotentialSpleenItems };
+  }
+
+  savedPotentialSpleenItems = $items`transdermal smoke patch, voodoo snuff, blood-drive sticker`;
+  savedPotentialSpleenItems.sort((x, y) => valuePerSpleen(x) - valuePerSpleen(y));
+  for (const spleenItem of savedPotentialSpleenItems) {
+    print(`${spleenItem} value/spleen: ${-valuePerSpleen(spleenItem)}`);
+  }
+  savedBestSpleenItem = savedPotentialSpleenItems[0];
+  if (
+    savedBestSpleenItem.name === 'blood-drive sticker' &&
+    totalAmount(snuff) > 50 &&
+    totalAmount($item`blood-drive sticker`) < 6
+  ) {
+    // Override if we have too many to sell.
+    savedBestSpleenItem = $item`voodoo snuff`;
+  } else if (valuePerSpleen(savedBestSpleenItem) - valuePerSpleen(snuff) < 300 && totalAmount(snuff) > 50) {
+    savedBestSpleenItem = $item`voodoo snuff`;
+  }
+  savedPotentialSpleenItems.splice(savedPotentialSpleenItems.indexOf(savedBestSpleenItem), 1);
+  savedPotentialSpleenItems.splice(0, 0, savedBestSpleenItem);
+  return { bestSpleenItem: savedBestSpleenItem, potentialSpleenItems: savedPotentialSpleenItems };
 }
 
 export function fillSomeSpleen() {
+  const { bestSpleenItem } = getBestSpleenItems();
   print(`Spleen item: ${bestSpleenItem}`);
   fillSpleenWith(bestSpleenItem);
 }
 
 export function fillAllSpleen(): void {
+  const { potentialSpleenItems } = getBestSpleenItems();
   for (const spleenItem of potentialSpleenItems) {
     print(`Filling spleen with ${spleenItem}.`);
     fillSpleenWith(spleenItem);
@@ -200,7 +221,7 @@ export function fillAllSpleen(): void {
 
 export function fillSpleenWith(spleenItem: Item) {
   if (mySpleenUse() + spleenItem.spleen <= spleenLimit()) {
-    const count = (spleenLimit() - mySpleenUse()) / spleenItem.spleen;
+    const count = Math.floor((spleenLimit() - mySpleenUse()) / spleenItem.spleen);
     get(count, spleenItem);
     chewSafe(count, spleenItem);
   }

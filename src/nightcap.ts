@@ -19,8 +19,8 @@ import {
   getCampground,
   create,
 } from 'kolmafia';
-import {$familiar, $item} from 'libram/src';
-import {drinkSafe, drinkSpleen, ensureOde, fillAllSpleen, getPropertyInt} from './daily-lib';
+import { $familiar, $item } from 'libram/src';
+import { drinkSafe, drinkSpleen, ensureOde, fillAllSpleen, getPropertyInt } from './daily-lib';
 
 function normalLimit(): number {
   return inebrietyLimit() - (myFamiliar() === $familiar`Stooper` ? 1 : 0);
