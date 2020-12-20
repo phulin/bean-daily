@@ -18,9 +18,20 @@ import {
   buy,
   getCampground,
   create,
+  visitUrl,
+  runChoice,
 } from 'kolmafia';
 import { $familiar, $item } from 'libram/src';
-import { drinkSafe, drinkSpleen, ensureOde, fillAllSpleen, getPropertyInt } from './daily-lib';
+import {
+  drinkSafe,
+  drinkSpleen,
+  ensureOde,
+  fillAllSpleen,
+  getPropertyBoolean,
+  getPropertyInt,
+  MPA,
+  withFamiliar,
+} from './daily-lib';
 
 function normalLimit(): number {
   return inebrietyLimit() - (myFamiliar() === $familiar`Stooper` ? 1 : 0);
@@ -31,6 +42,8 @@ export function main(args = '') {
     abort('Make sure organs are full first.');
   }
 
+  print(`Using adventure value ${MPA}.`, 'blue');
+
   let sausagesEaten = getPropertyInt('_sausagesEaten');
   const borrowTime = getProperty('_borrowedTimeUsed') !== 'true' && args.includes('ascend');
   if (sausagesEaten < 23 || borrowTime) {
@@ -38,7 +51,7 @@ export function main(args = '') {
     retrieveItem(count, $item`magical sausage`);
     for (let i = 0; i < count; i++) {
       while (
-        reverseNumberology()['69'] !== undefined &&
+        reverseNumberology()[69] !== undefined &&
         getPropertyInt('_universeCalculated') < getPropertyInt('skillLevel144')
       ) {
         cliExecute('numberology 69');
@@ -85,8 +98,30 @@ export function main(args = '') {
     }
 
     cliExecute('beachcomber free');
+    cliExecute('briefcase drink');
+
+    visitUrl('place.php?whichplace=chateau&action=chateau_desk2');
+
+    if (!getPropertyBoolean('_cargoPocketEmptied')) {
+      for (const pocket of [653, 533, 590, 517, 587]) {
+        if (!getProperty('cargoPocketsEmptied').split(',').includes(pocket.toString())) {
+          cliExecute(`cargo pick ${pocket}`);
+          break;
+        }
+      }
+    }
 
     create(3 - getPropertyInt('_clipartSummons'), $item`box of Familiar Jacks`);
     create(3 - getPropertyInt('_sourceTerminalExtrudes'), $item`hacked gibson`);
+
+    if (!getPropertyBoolean('_internetPrintScreenButtonBought')) create(1, $item`print screen button`);
+
+    if (!getPropertyBoolean('_seaJellyHarvested')) {
+      visitUrl('place.php?whichplace=sea_oldman&action=oldman_oldman');
+      withFamiliar($familiar`Space Jellyfish`, () => {
+        visitUrl('place.php?whichplace=thesea&action=thesea_left2');
+        runChoice(1);
+      });
+    }
   }
 }

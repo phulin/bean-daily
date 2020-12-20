@@ -4,6 +4,9 @@ module.exports = {
   entry: {
     hobodiet: './src/hobodiet.ts',
     nightcap: './src/nightcap.ts',
+    freefights: './src/freefights.ts',
+    postascend: './src/post.ts',
+    'daily-combat': './src/combat.ts',
   },
   mode: 'development',
   devtool: false,

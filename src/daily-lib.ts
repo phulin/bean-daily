@@ -1,7 +1,6 @@
 import {
   print,
   getProperty,
-  abort,
   itemAmount,
   closetAmount,
   takeCloset,
@@ -30,30 +29,55 @@ import {
   myInebriety,
   inebrietyLimit,
   cliExecute,
+  myMeat,
+  myClosetMeat,
+  myFamiliar,
+  useFamiliar,
+  setProperty,
+  getClanName,
+  visitUrl,
+  xpath,
+  retrieveItem,
+  myMp,
+  myMaxmp,
+  availableAmount,
+  putStash,
+  takeStash,
 } from 'kolmafia';
 import { $effect, $item, $items, $skill } from 'libram/src';
 
 export const MPA = getPropertyInt('valueOfAdventure');
-print(`Using adventure value ${MPA}.`, 'blue');
 
 export function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(n, max));
 }
 
+export function getPropertyString(propertyName: string, defaultValue: string | null = null) {
+  return getProperty(propertyName) ?? defaultValue;
+}
+
 export function getPropertyInt(name: string): number {
   const str = getProperty(name);
   if (str === '') {
-    abort(`Unknown property ${name}.`);
+    throw `Unknown property ${name}.`;
   }
   return parseInt(str, 10);
+}
+
+export function setPropertyInt(name: string, value: number) {
+  setProperty(name, `${value}`);
 }
 
 export function getPropertyBoolean(name: string) {
   const str = getProperty(name);
   if (str === '') {
-    abort(`Unknown property ${name}.`);
+    throw `Unknown property ${name}.`;
   }
   return str === 'true';
+}
+
+export function setChoice(choice: number, value: number | string) {
+  setProperty(`choiceAdventure${choice}`, value.toString());
 }
 
 export function itemPriority(...items: Item[]): Item {
@@ -70,7 +94,7 @@ const priceCaps: { [index: string]: number } = {
   'jar of fermented pickle juice': 75000,
   "Frosty's frosty mug": 45000,
   'extra-greasy slider': 45000,
-  "Ol' Scratch's salad fork": 45000,
+  "Ol' Scratch's salad fork": 50000,
   'transdermal smoke patch': 7000,
   'voodoo snuff': 36000,
   'blood-drive sticker': 210000,
@@ -79,13 +103,13 @@ const priceCaps: { [index: string]: number } = {
 };
 
 export function getCapped(qty: number, item: Item, maxPrice: number) {
-  if (qty * mallPrice(item) > 1000000) abort('bad get!');
+  if (qty * mallPrice(item) > 1000000) throw 'bad get!';
 
   let remaining = qty - itemAmount(item);
   if (remaining <= 0) return;
 
   const getCloset = Math.min(remaining, closetAmount(item));
-  if (!takeCloset(getCloset, item)) abort('failed to remove from closet');
+  if (!takeCloset(getCloset, item)) throw 'failed to remove from closet';
   remaining -= getCloset;
   if (remaining <= 0) return;
 
@@ -95,12 +119,13 @@ export function getCapped(qty: number, item: Item, maxPrice: number) {
     cliExecute('refresh inventory');
     remaining = qty - itemAmount(item);
     getMall = Math.min(remaining, shopAmount(item));
-    if (!takeShop(getMall, item)) abort('failed to remove from shop');
+    if (!takeShop(getMall, item)) throw 'failed to remove from shop';
   }
   remaining -= getMall;
   if (remaining <= 0) return;
 
-  if (buy(remaining, item, maxPrice) < remaining) abort(`Mall price too high for ${item.name}.`);
+  buy(remaining, item, maxPrice);
+  if (itemAmount(item) < qty) throw `Mall price too high for ${item.name}.`;
 }
 
 export function get(qty: number, item: Item) {
@@ -109,26 +134,26 @@ export function get(qty: number, item: Item) {
 
 export function eatSafe(qty: number, item: Item) {
   get(1, item);
-  if (!eat(qty, item)) abort('Failed to eat safely');
+  if (!eat(qty, item)) throw 'Failed to eat safely';
 }
 
 export function drinkSafe(qty: number, item: Item) {
   get(1, item);
-  if (!drink(qty, item)) abort('Failed to drink safely');
+  if (!drink(qty, item)) throw 'Failed to drink safely';
 }
 
 export function chewSafe(qty: number, item: Item) {
   get(1, item);
-  if (!chew(qty, item)) abort('Failed to chew safely');
+  if (!chew(qty, item)) throw 'Failed to chew safely';
 }
 
 export function eatSpleen(qty: number, item: Item) {
-  if (mySpleenUse() < 5) abort('No spleen to clear with this.');
+  if (mySpleenUse() < 5) throw 'No spleen to clear with this.';
   eatSafe(qty, item);
 }
 
 export function drinkSpleen(qty: number, item: Item) {
-  if (mySpleenUse() < 5) abort('No spleen to clear with this.');
+  if (mySpleenUse() < 5) throw 'No spleen to clear with this.';
   drinkSafe(qty, item);
 }
 
@@ -197,6 +222,8 @@ function getBestSpleenItems() {
   ) {
     // Override if we have too many to sell.
     savedBestSpleenItem = $item`voodoo snuff`;
+  } else if (savedBestSpleenItem.name === 'blood-drive sticker' && myMeat() + myClosetMeat() < 20000000) {
+    savedBestSpleenItem = savedPotentialSpleenItems[1];
   } else if (valuePerSpleen(savedBestSpleenItem) - valuePerSpleen(snuff) < 300 && totalAmount(snuff) > 50) {
     savedBestSpleenItem = $item`voodoo snuff`;
   }
@@ -240,7 +267,7 @@ export function fillStomach() {
     if (myMaxhp() < 1000) {
       maximize('hot res', false);
     }
-    const count = Math.min((fullnessLimit() - myFullness()) / 5, mySpleenUse() / 5);
+    const count = Math.floor(Math.min((fullnessLimit() - myFullness()) / 5, mySpleenUse() / 5));
     restoreHp(myMaxhp());
     get(count, $item`extra-greasy slider`);
     get(count, $item`Ol' Scratch's salad fork`);
@@ -264,7 +291,7 @@ export function fillLiver() {
     if (myMaxhp() < 1000) {
       maximize('0.05hp, cold res', false);
     }
-    const count = Math.min((inebrietyLimit() - myInebriety()) / 5, mySpleenUse() / 5);
+    const count = Math.floor(Math.min((inebrietyLimit() - myInebriety()) / 5, mySpleenUse() / 5));
     restoreHp(myMaxhp());
     ensureOde(count * 5);
     get(count, $item`jar of fermented pickle juice`);
@@ -272,5 +299,121 @@ export function fillLiver() {
     drinkSpleen(count, $item`Frosty's frosty mug`);
     drinkSpleen(count, $item`jar of fermented pickle juice`);
     fillSomeSpleen();
+  }
+}
+
+const familiarStack: Familiar[] = [];
+
+export function pushFamiliar(newFamiliar: Familiar) {
+  familiarStack.push(myFamiliar());
+  useFamiliar(newFamiliar);
+}
+
+export function popFamiliar() {
+  const currentFamiliar = myFamiliar();
+  const lastFamiliar = familiarStack.pop();
+  if (lastFamiliar !== undefined) useFamiliar(lastFamiliar);
+  return currentFamiliar;
+}
+
+export function withFamiliar<T>(familiar: Familiar, action: () => T) {
+  pushFamiliar(familiar);
+  try {
+    return action();
+  } finally {
+    popFamiliar();
+  }
+}
+
+function getClanCache(targetClanName: string | null = null) {
+  let clanCache = new Map<string, number>(JSON.parse(getPropertyString('minehobo_clanCache', '[]')));
+  if (Object.keys(clanCache).length === 0 || (targetClanName !== null && !clanCache.has(targetClanName))) {
+    const recruiter = visitUrl('clan_signup.php');
+    const clanIds: number[] = xpath(recruiter, '//select[@name="whichclan"]/option/@value').map((s: string) =>
+      parseInt(s, 10)
+    );
+    const clanNames: string[] = xpath(recruiter, '//select[@name="whichclan"]/option/text()');
+    const clanNamesAndIds = clanIds.reduce(
+      (list, clanId, index) => [...list, [clanNames[index], clanId] as [string, number]],
+      [] as [string, number][]
+    );
+    clanCache = new Map<string, number>(clanNamesAndIds);
+  }
+  setProperty('bdaily_clanCache', JSON.stringify([...clanCache.entries()]));
+  return clanCache;
+}
+
+function getTargetClanName(target: string) {
+  const clanCache = getClanCache();
+  const targetClanNames = [...clanCache.keys()].filter((name: string) =>
+    name.toLowerCase().includes(target.toLowerCase())
+  );
+  if (targetClanNames.length === 0) {
+    throw `You're not in any clan named like ${target}.`;
+  } else if (targetClanNames.length >= 2) {
+    throw `You're in multiple clans named like ${target}: ${targetClanNames}`;
+  }
+  return targetClanNames[0];
+}
+
+export function setClan(target: string, verbose = true) {
+  const targetClanName = getTargetClanName(target);
+  if (getClanName() !== targetClanName) {
+    if (verbose) print(`Switching to clan: ${targetClanName}.`);
+    visitUrl(
+      `showclan.php?whichclan=${getClanCache(targetClanName).get(targetClanName)}&action=joinclan&confirm=on&pwd`
+    );
+    if (getClanName() !== targetClanName) {
+      throw `Failed to switch clans to ${target}. Did you spell it correctly? Are you whitelisted?`;
+    }
+    if (verbose) print('Successfully switched clans.', 'green');
+  } else {
+    if (verbose) print(`Already in clan ${targetClanName}.`, 'blue');
+  }
+  return true;
+}
+
+export function withStash<T>(itemsToTake: Item[], action: () => T) {
+  const stashClanName = getProperty('stashClan');
+  if (stashClanName === '') return null;
+  if (itemsToTake.every(item => availableAmount(item) > 0)) return action();
+
+  const startingClanName = getClanName();
+  setClan(stashClanName);
+  if (getClanName() !== stashClanName) throw "Wrong clan! Don't take stuff out of the stash here!";
+  const quantitiesTaken = new Map<Item, number>();
+  try {
+    for (const item of itemsToTake) {
+      const succeeded = takeStash(1, item);
+      if (succeeded) {
+        print(`Took ${item.plural} from stash.`, 'blue');
+        quantitiesTaken.set(item, (quantitiesTaken.get(item) ?? 0) + (succeeded ? 1 : 0));
+      }
+    }
+    return action();
+  } finally {
+    // eslint-disable-next-line no-unsafe-finally
+    if (getClanName() !== stashClanName) throw "Wrong clan! Don't put stuff back in the stash here!";
+    for (const [item, quantityTaken] of quantitiesTaken.entries()) {
+      putStash(quantityTaken, item);
+      print(`Returned ${quantityTaken} ${item.plural} to stash.`, 'blue');
+    }
+    setClan(startingClanName);
+  }
+}
+
+export function ensureMpSausage(mp: number) {
+  while (myMp() < Math.min(mp, myMaxmp())) {
+    retrieveItem(1, $item`magical sausage`);
+    eat(1, $item`magical sausage`);
+  }
+}
+
+export function ensureEffect(effect: Effect) {
+  if (haveEffect(effect) === 0) {
+    try {
+      cliExecute(effect.default);
+      // eslint-disable-next-line no-empty
+    } catch {}
   }
 }

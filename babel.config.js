@@ -7,9 +7,10 @@ module.exports = function (api) {
       [
         '@babel/preset-env',
         {
-          targets: {rhino: '1.7'},
+          targets: { rhino: '1.7' },
         },
       ],
     ],
+    plugins: ['@babel/proposal-class-properties'],
   };
 };
