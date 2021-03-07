@@ -44,9 +44,12 @@ import {
   putStash,
   takeStash,
 } from 'kolmafia';
-import { $effect, $item, $items, $skill } from 'libram/src';
+import { $effect, $item, $items, $skill } from 'libram';
 
 export const MPA = getPropertyInt('valueOfAdventure');
+
+const fullnessReserve = 0;
+const inebrietyReserve = 0;
 
 export function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(n, max));
@@ -97,9 +100,11 @@ const priceCaps: { [index: string]: number } = {
   "Ol' Scratch's salad fork": 50000,
   'transdermal smoke patch': 7000,
   'voodoo snuff': 36000,
+  'antimatter wad': 24000,
   'blood-drive sticker': 210000,
   'spice melange': 500000,
   'splendid martini': 10000,
+  'Eye and a Twist': 10000,
 };
 
 export function getCapped(qty: number, item: Item, maxPrice: number) {
@@ -209,7 +214,7 @@ function getBestSpleenItems() {
     return { bestSpleenItem: savedBestSpleenItem, potentialSpleenItems: savedPotentialSpleenItems };
   }
 
-  savedPotentialSpleenItems = $items`transdermal smoke patch, voodoo snuff, blood-drive sticker`;
+  savedPotentialSpleenItems = $items`transdermal smoke patch, antimatter wad, voodoo snuff, blood-drive sticker`;
   savedPotentialSpleenItems.sort((x, y) => valuePerSpleen(x) - valuePerSpleen(y));
   for (const spleenItem of savedPotentialSpleenItems) {
     print(`${spleenItem} value/spleen: ${-valuePerSpleen(spleenItem)}`);
@@ -263,11 +268,12 @@ export function fillStomach() {
     use(1, $item`milk of magnesium`);
   }
   // Save space for marketplace food.
-  while (myFullness() + 5 <= fullnessLimit()) {
+  const limit = fullnessLimit() - fullnessReserve;
+  while (myFullness() + 5 <= limit) {
     if (myMaxhp() < 1000) {
       maximize('hot res', false);
     }
-    const count = Math.floor(Math.min((fullnessLimit() - myFullness()) / 5, mySpleenUse() / 5));
+    const count = Math.floor(Math.min((limit - myFullness()) / 5, mySpleenUse() / 5));
     restoreHp(myMaxhp());
     get(count, $item`extra-greasy slider`);
     get(count, $item`Ol' Scratch's salad fork`);
@@ -281,17 +287,18 @@ export function fillStomach() {
 export function fillLiver() {
   if (!getPropertyBoolean('_mimeArmyShotglassUsed') && itemAmount($item`mime army shotglass`) > 0) {
     equip($item`tuxedo shirt`);
-    drink(1, itemPriority($item`astral pilsner`, $item`splendid martini`));
+    drink(1, itemPriority($item`astral pilsner`, cheaper($item`Eye and a Twist`, $item`splendid martini`)));
   }
-  while (myInebriety() + 1 <= inebrietyLimit() && itemAmount($item`astral pilsner`) > 0) {
+  const limit = inebrietyLimit() - inebrietyReserve;
+  while (myInebriety() + 1 <= limit && itemAmount($item`astral pilsner`) > 0) {
     ensureOde(1);
     drink(1, $item`astral pilsner`);
   }
-  while (myInebriety() + 5 <= inebrietyLimit()) {
+  while (myInebriety() + 5 <= limit) {
     if (myMaxhp() < 1000) {
       maximize('0.05hp, cold res', false);
     }
-    const count = Math.floor(Math.min((inebrietyLimit() - myInebriety()) / 5, mySpleenUse() / 5));
+    const count = Math.floor(Math.min((limit - myInebriety()) / 5, mySpleenUse() / 5));
     restoreHp(myMaxhp());
     ensureOde(count * 5);
     get(count, $item`jar of fermented pickle juice`);
@@ -395,6 +402,7 @@ export function withStash<T>(itemsToTake: Item[], action: () => T) {
     // eslint-disable-next-line no-unsafe-finally
     if (getClanName() !== stashClanName) throw "Wrong clan! Don't put stuff back in the stash here!";
     for (const [item, quantityTaken] of quantitiesTaken.entries()) {
+      retrieveItem(quantityTaken, item);
       putStash(quantityTaken, item);
       print(`Returned ${quantityTaken} ${item.plural} to stash.`, 'blue');
     }

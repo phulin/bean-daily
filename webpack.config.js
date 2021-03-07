@@ -1,3 +1,4 @@
+/* eslint-env node */
 const path = require('path');
 
 module.exports = {
@@ -7,6 +8,7 @@ module.exports = {
     freefights: './src/freefights.ts',
     postascend: './src/post.ts',
     'daily-combat': './src/combat.ts',
+    wads: './src/wads.ts',
   },
   mode: 'development',
   devtool: false,

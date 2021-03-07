@@ -24,7 +24,7 @@ import {
   takeCloset,
   closetAmount,
 } from 'kolmafia';
-import { $class, $item, $location, $skill, $stat } from 'libram/src';
+import { $class, $item, $location, $skill, $stat } from 'libram';
 import { Macro, withMacro } from './combat';
 import {
   getPropertyInt,
@@ -81,7 +81,11 @@ if (!getPropertyBoolean('_distentionPillUsed') && myFullness() <= fullnessLimit(
   }
 }
 
-if (!getPropertyBoolean('_syntheticDogHairPillUsed') && 1 <= myInebriety() && myInebriety() <= inebrietyLimit()) {
+if (
+  !getPropertyBoolean('_syntheticDogHairPillUsed') &&
+  1 <= myInebriety() &&
+  myInebriety() <= inebrietyLimit()
+) {
   if (!use(1, $item`synthetic dog hair pill`)) {
     print('WARNING: Out of synthetic dog hair pills.');
   }
@@ -93,7 +97,7 @@ if (
   3 <= myInebriety() &&
   myInebriety() <= inebrietyLimit() + 1
 ) {
-  useIfUnused($item`spice melange`, 'spiceMelangeUsed', 500000);
+  useIfUnused($item`spice melange`, 'spiceMelangeUsed', 60 * MPA);
 }
 if (myFullness() + 4 === fullnessLimit()) {
   useIfUnused($item`cuppa Voraci tea`, '_voraciTeaUsed', 110000);
@@ -115,8 +119,14 @@ if (spleenLimit() - mySpleenUse() === 2) chew($item`transdermal smoke patch`);
 
 useIfUnused($item`fancy chocolate car`, getPropertyInt('_chocolatesUsed') === 0, 2 * MPA);
 
-const loveChocolateCount = Math.max(3 - Math.floor(20000 / MPA) - getPropertyInt('_loveChocolatesUsed'), 0);
-const loveChocolateEat = Math.min(loveChocolateCount, itemAmount($item`LOV Extraterrestrial Chocolate`));
+const loveChocolateCount = Math.max(
+  3 - Math.floor(20000 / MPA) - getPropertyInt('_loveChocolatesUsed'),
+  0
+);
+const loveChocolateEat = Math.min(
+  loveChocolateCount,
+  itemAmount($item`LOV Extraterrestrial Chocolate`)
+);
 use(loveChocolateEat, $item`LOV Extraterrestrial Chocolate`);
 
 const choco = new Map([
@@ -134,7 +144,11 @@ if (choco.has(toInt(myClass())) && getPropertyInt('_chocolatesUsed') < 3) {
   use(count, item);
 }
 
-useIfUnused($item`fancy chocolate sculpture`, getPropertyInt('_chocolateSculpturesUsed') < 1, 5 * MPA + 5000);
+useIfUnused(
+  $item`fancy chocolate sculpture`,
+  getPropertyInt('_chocolateSculpturesUsed') < 1,
+  5 * MPA + 5000
+);
 useIfUnused($item`essential tofu`, '_essentialTofuUsed', 5 * MPA + 5000);
 
 if (getProperty('_timesArrowUsed') !== 'true' && mallPrice($item`time's arrow`) < 5 * MPA + 5000) {

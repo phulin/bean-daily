@@ -1,7 +1,7 @@
+/* eslint-env node */
 module.exports = function (api) {
   api.cache(true);
   return {
-    exclude: ['node_modules/libram/kolmafia.d.ts'],
     presets: [
       '@babel/preset-typescript',
       [
@@ -11,6 +11,15 @@ module.exports = function (api) {
         },
       ],
     ],
-    plugins: ['@babel/proposal-class-properties'],
+    plugins: [
+      [
+        '@babel/plugin-proposal-decorators',
+        {
+          decoratorsBeforeExport: true,
+        },
+      ],
+      '@babel/plugin-proposal-class-properties',
+      '@babel/plugin-proposal-object-rest-spread',
+    ],
   };
 };

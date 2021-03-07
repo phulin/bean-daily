@@ -4,7 +4,6 @@ import {
   myInebriety,
   myFullness,
   fullnessLimit,
-  abort,
   getProperty,
   retrieveItem,
   reverseNumberology,
@@ -20,9 +19,13 @@ import {
   create,
   visitUrl,
   runChoice,
+  canInteract,
+  availableAmount,
+  myAdventures,
 } from 'kolmafia';
-import { $familiar, $item } from 'libram/src';
+import { $familiar, $item, get } from 'libram';
 import {
+  cheaper,
   drinkSafe,
   drinkSpleen,
   ensureOde,
@@ -39,12 +42,27 @@ function normalLimit(): number {
 
 export function main(args = '') {
   if (myInebriety() < normalLimit() || myFullness() < fullnessLimit()) {
-    abort('Make sure organs are full first.');
+    throw 'Make sure organs are full first.';
+  }
+
+  if (
+    availableAmount($item`Spooky Putty sheet`) + availableAmount($item`Spooky Putty monster`) >
+    0
+  ) {
+    throw 'For some reason you have spooky putty in your inventory. Go fix that.';
+  }
+
+  const normalFinished = getProperty('questL13Final') === 'finished';
+  const csFinished =
+    (getProperty('csServicesPerformed').match(/,/g) || []).length === 10 && canInteract();
+  if (args.includes('ascend') && !normalFinished && !csFinished) {
+    throw 'We have not finished the main questline yet!';
   }
 
   print(`Using adventure value ${MPA}.`, 'blue');
 
   let sausagesEaten = getPropertyInt('_sausagesEaten');
+  let done = false;
   const borrowTime = getProperty('_borrowedTimeUsed') !== 'true' && args.includes('ascend');
   if (sausagesEaten < 23 || borrowTime) {
     let count = Math.max(23 - sausagesEaten, 0);
@@ -64,13 +82,18 @@ export function main(args = '') {
     eat(count, $item`magical sausage`);
     if (borrowTime) use(1, $item`borrowed time`);
 
-    print('Generated more adventures. Use these first.', 'red');
-  } else {
+    if (myAdventures() >= 10) {
+      print('Generated more adventures. Use these first.', 'red');
+      done = true;
+    }
+  }
+
+  if (!done) {
     useFamiliar($familiar`Stooper`);
     if (myInebriety() + 1 === inebrietyLimit()) {
       ensureOde(1);
       equip($item`tuxedo shirt`);
-      drinkSafe(1, $item`splendid martini`);
+      drinkSafe(1, cheaper($item`splendid martini`, $item`Eye and a Twist`));
     }
 
     if (myInebriety() === inebrietyLimit()) {
@@ -111,10 +134,17 @@ export function main(args = '') {
       }
     }
 
+    if (!get('_timeSpinnerReplicatorUsed')) cliExecute('farfuture mall');
+
     create(3 - getPropertyInt('_clipartSummons'), $item`box of Familiar Jacks`);
     create(3 - getPropertyInt('_sourceTerminalExtrudes'), $item`hacked gibson`);
 
-    if (!getPropertyBoolean('_internetPrintScreenButtonBought')) create(1, $item`print screen button`);
+    if (!getPropertyBoolean('_internetPrintScreenButtonBought'))
+      create(1, $item`print screen button`);
+
+    if (get('_deckCardsDrawn') <= 10) cliExecute('play Island');
+    if (get('_deckCardsDrawn') <= 10) cliExecute('play Ancestral Recall');
+    if (get('_deckCardsDrawn') <= 10) cliExecute('play 1952');
 
     if (!getPropertyBoolean('_seaJellyHarvested')) {
       visitUrl('place.php?whichplace=sea_oldman&action=oldman_oldman');

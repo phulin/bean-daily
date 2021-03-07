@@ -30,21 +30,29 @@ import {
   drink,
   create,
   print,
+  faxbot,
+  myStorageMeat,
 } from 'kolmafia';
-import { $skill, $item, $slot, $class, $familiar, $effect, $stat, $location, $items } from 'libram/src';
+import {
+  $skill,
+  $item,
+  $slot,
+  $class,
+  $familiar,
+  $effect,
+  $stat,
+  $location,
+  $items,
+  $monster,
+  get,
+  Witchess,
+  SourceTerminal,
+} from 'libram';
 import { adventureMacro, Macro, withMacro } from './combat';
 
-import {
-  getPropertyBoolean,
-  ensureMpSausage,
-  ensureEffect,
-  itemPriority,
-  getPropertyInt,
-  withStash,
-  withFamiliar,
-} from './daily-lib';
+import { ensureMpSausage, ensureEffect, itemPriority, withStash, withFamiliar } from './daily-lib';
 
-function get(qty: number, item: Item, maxPrice: number) {
+function getItem(qty: number, item: Item, maxPrice: number) {
   if (qty > 15) throw 'Bad get!';
 
   let remaining = qty - itemAmount(item);
@@ -68,18 +76,19 @@ function get(qty: number, item: Item, maxPrice: number) {
 
 if (!canInteract()) throw 'Break prism first.';
 
-cliExecute('pull all');
+if (myStorageMeat() > 0) cliExecute('pull all');
 
 setProperty('autoSatisfyWithNPCs', 'true');
 setProperty('autoSatisfyWithCoinmasters', 'true');
 setProperty('hpAutoRecovery', '0.8');
 
-if (!getPropertyBoolean('lockPicked')) {
+if (!get('lockPicked')) {
   useSkill(1, $skill`Lock Picking`);
   runChoice(1);
 }
 
 cliExecute('mood default');
+cliExecute('uneffect Cowrruption');
 cliExecute('ccs bean-daily');
 if (getProperty('boomBoxSong') !== 'Food Vibrations') {
   cliExecute('boombox food');
@@ -113,58 +122,90 @@ equip($slot`acc3`, $item`Lil' Doctor&trade; Bag`);
 
 if (myClass() === $class`Pastamancer`) useSkill(1, $skill`Bind Undead Elbow Macaroni`);
 
-if (!getPropertyBoolean('_thesisDelivered')) {
+if (get('_feastUsed') === 0) {
+  withStash($items`moveable feast`, () => {
+    print('Time to feast!', 'blue');
+    use($item`moveable feast`); // on Professor itself.
+    withFamiliar($familiar`Stocking Mimic`, () => use($item`moveable feast`));
+    withFamiliar($familiar`Hovering Sombrero`, () => use($item`moveable feast`));
+    withFamiliar($familiar`Frumious Bandersnatch`, () => use($item`moveable feast`));
+  });
+}
+
+if (!get('_thesisDelivered')) {
   useFamiliar($familiar`Pocket Professor`);
 
   const neededXp = 400 - $familiar`Pocket Professor`.experience;
-  if (neededXp >= 20 && mallPrice($item`ghost dog chow`) < 4000) use(neededXp / 20, $item`ghost dog chow`);
+  if (neededXp >= 20 && mallPrice($item`ghost dog chow`) < 2500)
+    use(Math.floor(neededXp / 20), $item`ghost dog chow`);
 
   ensureEffect($effect`Heart of White`);
   if (haveEffect($effect`Blue Swayed`) < 50) {
     use(Math.floor((59 - haveEffect($effect`Blue Swayed`)) / 10), $item`pulled blue taffy`);
   }
-  withStash($items`defective game grid token, moveable feast`, () => {
-    if (haveEffect($effect`Video... Games?`) === 0 && !getPropertyBoolean('_defectiveTokenUsed')) {
-      use($item`defective game grid token`);
-    }
-    if (getPropertyInt('_feastUsed') === 0) {
-      print('Time to feast!', 'blue');
-      use($item`moveable feast`); // on Professor itself.
-      withFamiliar($familiar`Stocking Mimic`, () => use($item`moveable feast`));
-      withFamiliar($familiar`Hovering Sombrero`, () => use($item`moveable feast`));
-      withFamiliar($familiar`Frumious Bandersnatch`, () => use($item`moveable feast`));
-    }
-  });
+  if (haveEffect($effect`Video... Games?`) === 0 && !get('_defectiveTokenUsed')) {
+    use($item`defective game grid token`);
+  }
 
-  maximize('familiar weight', false);
+  equip($item`giant yellow hat`);
+  equip($slot`acc1`, $item`lucky gold ring`);
+  equip($slot`acc2`, $item`Mr. Cheeng's spectacles`);
+  equip($slot`acc3`, $item`chalk chain`);
 
-  if (!getPropertyBoolean('_photocopyUsed')) {
-    if (availableAmount($item`photocopied monster`)) {
-      cliExecute('faxbot witchess bishop');
-    }
+  if (Witchess.fightsDone() === 0) {
     withStash($items`Spooky Putty sheet`, () => {
+      maximize('familiar weight, equip Professor chip', false);
+
       withMacro(
-        Macro.mIf('!hasskill lecture on relativity', Macro.skill($skill`Digitize`).item($item`Spooky Putty sheet`))
+        Macro.if_(
+          '!hasskill lecture on relativity',
+          Macro.skill($skill`Digitize`).item($item`Spooky Putty sheet`)
+        )
           .trySkill($skill`Lecture on Relativity`)
           .kill(),
-        () => use($item`photocopied monster`)
+        () => Witchess.fightPiece($monster`Witchess Bishop`)
       );
       while (availableAmount($item`Spooky Putty monster`) > 0) {
-        withMacro(Macro.item($item`Spooky Putty sheet`).kill(), () => use($item`Spooky Putty monster`));
+        withMacro(
+          Macro.externalIf(
+            get('spookyPuttyCopiesMade') < 5,
+            Macro.item($item`Spooky Putty sheet`).toString()
+          ).kill(),
+          () => use($item`Spooky Putty monster`)
+        );
+        cliExecute('refresh inventory');
       }
     });
   }
 
-  while ($familiar`Pocket Professor`.experience < 400 && getPropertyInt('_lynyrdSnareUses') < 3) {
+  while ($familiar`Pocket Professor`.experience < 400 && get('_lynyrdSnareUses') < 3) {
     ensureMpSausage(100);
     withMacro(Macro.kill(), () => use(1, $item`lynyrd snare`));
   }
-  while ($familiar`Pocket Professor`.experience < 400 && getPropertyInt('_brickoFights') < 10) {
+  while ($familiar`Pocket Professor`.experience < 400 && get('_brickoFights') < 10) {
     ensureMpSausage(100);
     withMacro(Macro.kill(), () => use(1, $item`bricko ooze`));
   }
+  while ($familiar`Pocket Professor`.experience < 400 && Witchess.fightsDone() < 5) {
+    ensureMpSausage(100);
+    withMacro(Macro.kill(), () => Witchess.fightPiece($monster`Witchess Bishop`));
+  }
   if ($familiar`Pocket Professor`.experience < 400) {
-    throw 'Could not thesis for some reason.';
+    const neededXp2 = 400 - $familiar`Pocket Professor`.experience;
+    if (neededXp2 >= 20 && mallPrice($item`ghost dog chow`) < 5000) {
+      use(Math.floor(neededXp2 / 20), $item`ghost dog chow`);
+    }
+
+    if ($familiar`Pocket Professor`.experience < 400 && !get('_photocopyUsed')) {
+      maximize('familiar weight, equip Pocket Professor memory chip', false);
+      faxbot($monster`Witchess Bishop`, 'CheeseFax');
+      withMacro(Macro.trySkill($skill`Lecture on Relativity`).kill(), () =>
+        use($item`photocopied monster`)
+      );
+    }
+    if ($familiar`Pocket Professor`.experience < 400) {
+      throw 'Could not thesis for some reason.';
+    }
   }
 
   // Boost muscle.
@@ -176,7 +217,7 @@ if (!getPropertyBoolean('_thesisDelivered')) {
   if (myBuffedstat($stat`muscle`) < 1739) {
     cliExecute('ballpit');
   }
-  if (myBuffedstat($stat`muscle`) < 1739 && getPropertyInt('_powerfulGloveBatteryPowerUsed') <= 95) {
+  if (myBuffedstat($stat`muscle`) < 1739 && get('_powerfulGloveBatteryPowerUsed') <= 95) {
     equip($slot`acc1`, $item`Powerful Glove`);
     ensureEffect($effect`Triple-Sized`);
     maximize('muscle, equip Kramco', false);
@@ -198,14 +239,14 @@ if (haveEffect($effect`Jingle Jangle Jingle`) < 1500) cliExecute('send to buffy 
 
 cliExecute('hobodiet');
 
-if (fullnessLimit() - myFullness() === 1 && getPropertyBoolean('spiceMelangeUsed')) {
+if (fullnessLimit() - myFullness() === 1 && get('spiceMelangeUsed')) {
   cliExecute('pull * glass of raw eggs');
   eat(1, $item`fudge spork`);
   eat(1, itemPriority($item`glass of raw eggs`, $item`meteoreo`));
 }
 
 if (inebrietyLimit() - myInebriety() === 3) {
-  get(1, $item`Frosty's frosty mug`, 50000);
+  getItem(1, $item`Frosty's frosty mug`, 50000);
   drink(1, $item`Frosty's frosty mug`);
   drink(1, $item`perfect negroni`);
 }
