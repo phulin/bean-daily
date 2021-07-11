@@ -9,35 +9,45 @@ import {
   haveFamiliar,
   myInebriety,
   inebrietyLimit,
-} from 'kolmafia';
-import { $effect, $familiar, $item, $items, $skill, $skills, Macro as LibramMacro } from 'libram';
+} from "kolmafia";
+import {
+  $effect,
+  $familiar,
+  $item,
+  $items,
+  $skill,
+  $skills,
+  get,
+  Macro as LibramMacro,
+} from "libram";
 
 // multiFight() stolen from Aenimus: https://github.com/Aenimus/aen_cocoabo_farm/blob/master/scripts/aen_combat.ash.
 // Thanks! Licensed under MIT license.
 function multiFight() {
   while (inMultiFight()) runCombat();
-  if (choiceFollowsFight()) visitUrl('choice.php');
+  if (choiceFollowsFight()) visitUrl("choice.php");
 }
 
 export class Macro extends LibramMacro {
   stasis() {
-    return this.externalIf(myInebriety() > inebrietyLimit(), 'attack')
+    return this.externalIf(myInebriety() > inebrietyLimit(), "attack")
+      .externalIf(get("boomboxSong") === "Total Eclipse of Your Meat", Macro.skill("Sing Along"))
       .externalIf(
         myFamiliar() === $familiar`Stocking Mimic`,
         Macro.if_(
-          '!hpbelow 500',
+          "!hpbelow 500",
           Macro.skill($skill`Curse of Weaksauce`).skill($skill`Micrometeorite`)
         ).toString()
       )
       .skill($skill`Entangling Noodles`)
-      .if_('!hpbelow 500', Macro.skill($skill`Extract`))
+      .if_("!hpbelow 500", Macro.skill($skill`Extract`))
       .externalIf(
         myFamiliar() === $familiar`Space Jellyfish`,
-        Macro.if_('!hpbelow 500', Macro.skill($skill`Extract Jelly`)).toString()
+        Macro.if_("!hpbelow 500", Macro.skill($skill`Extract Jelly`)).toString()
       )
       .externalIf(
         myFamiliar() === $familiar`Stocking Mimic`,
-        Macro.while_('!pastround 8', Macro.item($item`seal tooth`))
+        Macro.while_("!pastround 8", Macro.item($item`seal tooth`))
           .skill($skill`Shell Up`)
           .toString()
       );
@@ -48,7 +58,8 @@ export class Macro extends LibramMacro {
   }
 
   kill() {
-    return this.externalIf(myInebriety() > inebrietyLimit(), 'attack')
+    return this.externalIf(myInebriety() > inebrietyLimit(), "attack")
+      .externalIf(get("boomBoxSong") === "Total Eclipse of Your Meat", Macro.skill("Sing Along"))
       .while_('!hpbelow 200 && !match "some of it is even intact"', Macro.skill($skill`Candyblast`))
       .skill($skill`Stuffed Mortar Shell`)
       .skill($skill`Saucestorm`)
@@ -68,7 +79,7 @@ export class Macro extends LibramMacro {
         (haveFamiliar($familiar`Frumious Bandersnatch`) &&
           haveEffect($effect`The Ode to Booze`) > 0) ||
           haveFamiliar($familiar`Pair of Stomping Boots`),
-        'runaway'
+        "runaway"
       )
       .skill(
         ...$skills`Spring-Loaded Front Bumper, Reflex Hammer, KGB tranquilizer dart, Throw Latte on Opponent, Snokebomb`
@@ -79,7 +90,8 @@ export class Macro extends LibramMacro {
 }
 
 export function main() {
-  Macro.load().submit();
+  let response = Macro.load().submit();
+  while (response.includes("action=fight.php")) response = Macro.load().submit();
   multiFight();
 }
 
@@ -93,7 +105,7 @@ export function withMacro<T>(macro: Macro, action: () => T) {
 }
 
 export function adventureMacro(loc: Location, macro: Macro) {
-  withMacro(macro, () => adv1(loc, -1, ''));
+  withMacro(macro, () => adv1(loc, -1, ""));
 }
 
 export function adventureMacroAuto(loc: Location, macro: Macro) {
