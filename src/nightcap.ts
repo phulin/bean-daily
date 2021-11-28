@@ -30,6 +30,7 @@ import {
   toInt,
   mallPrice,
   outfit,
+  getChateau,
 } from "kolmafia";
 import {
   $effect,
@@ -49,12 +50,15 @@ import {
   ensureEffect,
   ensureOde,
   fillAllSpleen,
+  getCapped,
   getPropertyBoolean,
   getPropertyInt,
   MPA,
   setChoice,
   withFamiliar,
 } from "./daily-lib";
+
+const frostyMug = $item`Frosty's frosty mug`;
 
 function normalLimit(): number {
   return inebrietyLimit() - (myFamiliar() === $familiar`Stooper` ? 1 : 0);
@@ -83,7 +87,7 @@ export function main(args = "") {
 
   let sausagesEaten = getPropertyInt("_sausagesEaten");
   let done = false;
-  const borrowTime = getProperty("_borrowedTimeUsed") !== "true" && args.includes("ascend");
+  const borrowTime = !get("_borrowedTimeUsed") && args.includes("ascend");
   if (sausagesEaten < 23 || borrowTime) {
     let count = Math.max(23 - sausagesEaten, 0);
     retrieveItem(count, $item`magical sausage`);
@@ -109,15 +113,23 @@ export function main(args = "") {
     }
   }
 
-  if (myAdventures() > 0) {
+  if (myAdventures() > 0 || !get("_borrowedTimeUsed")) {
     if (
       (get("gingerbreadCityAvailable") || get("_gingerbreadCityToday")) &&
       get("_gingerbreadCityTurns") < 15 &&
       get("gingerAdvanceClockUnlocked") &&
       get("_banderRunaways") < 11 + get("_gingerbreadCityTurns")
     ) {
+      if (myAdventures() === 0) use($item`borrowed time`);
       ensureOde(5);
-      maximizeCached(["familiar weight"]);
+      maximizeCached(["familiar weight"], {
+        forceEquip: [
+          ...(availableAmount($item`sprinkles`) < 5
+            ? $items`gingerbread moneybag, gingerbread mask, gingerbread pistol`
+            : []),
+          ...(myInebriety() > inebrietyLimit() ? $items`Drunkula's wineglass` : []),
+        ],
+      });
       useFamiliar($familiar`Frumious Bandersnatch`);
 
       setChoice(1215, 1); // Advance clock.
@@ -130,18 +142,20 @@ export function main(args = "") {
 
       while (get("_gingerbreadCityTurns") < 5) {
         const zone =
-          availableAmount($item`sprinkles`) > 5
+          availableAmount($item`sprinkles`) >= 5
             ? $location`Gingerbread Train Station`
             : $location`Gingerbread Industrial Zone`;
         if (zone === $location`Gingerbread Industrial Zone` && get("_gingerbreadCityTurns") === 5) {
           maximizeCached(["familiar weight"], {
-            forceEquip: $items`gingerbread moneybag, gingerbread mask, gingerbread pistol`,
+            forceEquip: myInebriety() > inebrietyLimit() ? $items`Drunkula's wineglass` : [],
           });
         }
         adventureMacro(zone, Macro.step("runaway"));
       }
 
-      maximizeCached(["familiar weight"]);
+      maximizeCached(["familiar weight"], {
+        forceEquip: myInebriety() > inebrietyLimit() ? $items`Drunkula's wineglass` : [],
+      });
       while (get("_gingerbreadCityTurns") < 15) {
         adventureMacro($location`Gingerbread Civic Center`, Macro.step("runaway"));
       }
@@ -187,6 +201,7 @@ export function main(args = "") {
       get("lastDMTDuplication") !== myAscensions() &&
       myAdventures() > 0
     ) {
+      getCapped(1, $item`warbear gyro`, 200000);
       setChoice(1119, 4);
       setChoice(1125, `1&iid=${toInt($item`warbear gyro`)}`);
       useFamiliar($familiar`Machine Elf`);
@@ -204,8 +219,11 @@ export function main(args = "") {
 
     if (myInebriety() === inebrietyLimit()) {
       ensureOde(5);
-      drinkSafe(1, $item`Frosty's frosty mug`);
-      drinkSpleen(1, $item`jar of fermented pickle juice`);
+      if (mallPrice(frostyMug) < 12 * MPA) {
+        getCapped(1, frostyMug, 12 * MPA);
+        drinkSafe(Math.min(1, availableAmount(frostyMug)), frostyMug);
+      }
+      drinkSafe(1, $item`vintage smart drink`);
     }
 
     if (args.includes("ascend")) {
@@ -243,10 +261,12 @@ export function main(args = "") {
         equip($item`burning cape`);
       }
       useFamiliar($familiar`Left-Hand Man`);
-      maximize("adventures", false);
+      maximize("adventures, equip Spacegate military insignia", false);
       cliExecute("/whitelist ferengi");
 
-      buy(1, $item`artificial skylight`);
+      if (!getChateau()["artificial skylight"]) {
+        buy(1, $item`artificial skylight`);
+      }
 
       if (!getCampground()["clockwork maid"]) {
         use(1, $item`clockwork maid`);

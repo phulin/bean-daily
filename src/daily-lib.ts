@@ -44,6 +44,8 @@ import {
   putStash,
   takeStash,
   drinksilent,
+  takeStorage,
+  storageAmount,
 } from "kolmafia";
 import { $effect, $item, $items, $skill } from "libram";
 
@@ -106,18 +108,32 @@ const priceCaps: { [index: string]: number } = {
   "spice melange": 500000,
   "splendid martini": 10000,
   "Eye and a Twist": 10000,
+  "emergency margarita": 20000,
+  "vintage smart drink": 20000,
 };
 
-export function getCapped(qty: number, item: Item, maxPrice: number) {
+export function getCapped(qty: number, item: Item, maxPrice?: number, throwOnFail = true): number {
+  if (maxPrice === undefined) maxPrice = priceCaps[item.name];
+  if (maxPrice === undefined) throw `No price cap for ${item.name}.`;
+
+  print(`Trying to acquire ${qty} ${item.plural}; max price ${maxPrice.toFixed(0)}.`, "green");
+
   if (qty * mallPrice(item) > 1000000) throw "bad get!";
 
-  let remaining = qty - itemAmount(item);
-  if (remaining <= 0) return;
+  const startAmount = itemAmount(item);
+
+  let remaining = qty - startAmount;
+  if (remaining <= 0) return qty;
 
   const getCloset = Math.min(remaining, closetAmount(item));
-  if (!takeCloset(getCloset, item)) throw "failed to remove from closet";
+  if (!takeCloset(getCloset, item) && throwOnFail) throw "failed to remove from closet";
   remaining -= getCloset;
-  if (remaining <= 0) return;
+  if (remaining <= 0) return qty;
+
+  const getStorage = Math.min(remaining, storageAmount(item));
+  if (!takeStorage(getStorage, item) && throwOnFail) throw "failed to remove from storage";
+  remaining -= getStorage;
+  if (remaining <= 0) return qty;
 
   let getMall = Math.min(remaining, shopAmount(item));
   if (!takeShop(getMall, item)) {
@@ -125,13 +141,16 @@ export function getCapped(qty: number, item: Item, maxPrice: number) {
     cliExecute("refresh inventory");
     remaining = qty - itemAmount(item);
     getMall = Math.min(remaining, shopAmount(item));
-    if (!takeShop(getMall, item)) throw "failed to remove from shop";
+    if (!takeShop(getMall, item) && throwOnFail) throw "failed to remove from shop";
   }
   remaining -= getMall;
-  if (remaining <= 0) return;
+  if (remaining <= 0) return qty;
+
+  if (maxPrice <= 0) throw `buying disabled for ${item.name}.`;
 
   buy(remaining, item, maxPrice);
-  if (itemAmount(item) < qty) throw `Mall price too high for ${item.name}.`;
+  if (itemAmount(item) < qty && throwOnFail) throw `Mall price too high for ${item.name}.`;
+  return itemAmount(item) - startAmount;
 }
 
 export function get(qty: number, item: Item) {
@@ -315,8 +334,8 @@ export function fillLiver() {
     const count = Math.floor(Math.min((limit - myInebriety()) / 5, mySpleenUse() / 5));
     restoreHp(myMaxhp());
     ensureOde(count * 5);
-    get(count, $item`jar of fermented pickle juice`);
     get(count, $item`Frosty's frosty mug`);
+    get(count, $item`jar of fermented pickle juice`);
     drinkSpleen(count, $item`Frosty's frosty mug`);
     drinkSpleen(count, $item`jar of fermented pickle juice`);
     fillSomeSpleen();
