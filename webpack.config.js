@@ -8,7 +8,6 @@ module.exports = {
     freefights: "./src/freefights.ts",
     postascend: "./src/post.ts",
     "daily-combat": "./src/combat.ts",
-    wads: "./src/wads.ts",
     login: "./src/login.ts",
   },
   mode: "development",
