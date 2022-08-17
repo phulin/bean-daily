@@ -12,6 +12,7 @@ import { Clan } from "libram";
 export function main(): void {
   const originalClan = getClanName();
   try {
+    Clan.join("The 100% of Scientific FACT Club");
     const table = xpath(
       visitUrl("clan_log.php"),
       '//center[.="Stash Activity:"]/../../table//td/font/.'

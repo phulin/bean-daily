@@ -31,6 +31,8 @@ import {
   mallPrice,
   outfit,
   getChateau,
+  itemAmount,
+  Item,
 } from "kolmafia";
 import {
   $effect,
@@ -42,9 +44,11 @@ import {
   get,
   have,
   maximizeCached,
+  sum,
 } from "libram";
 import { adventureMacro, Macro } from "./combat";
 import {
+  cheaper,
   drinkSafe,
   drinkSpleen,
   ensureEffect,
@@ -114,13 +118,13 @@ export function main(args = "") {
   }
 
   if (myAdventures() > 0 || !get("_borrowedTimeUsed")) {
+    if (myAdventures() === 0) use($item`borrowed time`);
     if (
       (get("gingerbreadCityAvailable") || get("_gingerbreadCityToday")) &&
       get("_gingerbreadCityTurns") < 15 &&
       get("gingerAdvanceClockUnlocked") &&
       get("_banderRunaways") < 11 + get("_gingerbreadCityTurns")
     ) {
-      if (myAdventures() === 0) use($item`borrowed time`);
       ensureOde(5);
       maximizeCached(["familiar weight"], {
         forceEquip: [
@@ -201,9 +205,9 @@ export function main(args = "") {
       get("lastDMTDuplication") !== myAscensions() &&
       myAdventures() > 0
     ) {
-      getCapped(1, $item`warbear gyro`, 200000);
+      getCapped(1, $item`bottle of Greedy Dog`, 200000);
       setChoice(1119, 4);
-      setChoice(1125, `1&iid=${toInt($item`warbear gyro`)}`);
+      setChoice(1125, `1&iid=${toInt($item`bottle of Greedy Dog`)}`);
       useFamiliar($familiar`Machine Elf`);
       adventureMacro($location`The Deep Machine Tunnels`, Macro.abort());
     }
@@ -223,7 +227,7 @@ export function main(args = "") {
         getCapped(1, frostyMug, 12 * MPA);
         drinkSafe(Math.min(1, availableAmount(frostyMug)), frostyMug);
       }
-      drinkSafe(1, $item`vintage smart drink`);
+      drinkSafe(1, cheaper(...$items`emergency margarita, vintage smart drink`));
     }
 
     if (args.includes("ascend")) {
@@ -287,15 +291,17 @@ export function main(args = "") {
       }
     }
 
-    if (!get("_timeSpinnerReplicatorUsed")) cliExecute("farfuture mall");
+    if (get("_detectiveCasesCompleted") < 3) {
+      cliExecute('call "Detective Solver.ash"');
+    }
+
+    if (!get("_timeSpinnerReplicatorUsed") && get("_timeSpinnerMinutesUsed") <= 8) {
+      cliExecute("farfuture mall");
+    }
 
     create(3 - getPropertyInt("_clipartSummons"), $item`box of Familiar Jacks`);
     if (availableAmount($item`Source essence`) >= 30) {
       create(3 - getPropertyInt("_sourceTerminalExtrudes"), $item`hacked gibson`);
-    }
-
-    if (!getPropertyBoolean("_internetPrintScreenButtonBought")) {
-      create(1, $item`print screen button`);
     }
 
     if (get("_deckCardsDrawn") <= 10) cliExecute("play Island");
@@ -308,6 +314,23 @@ export function main(args = "") {
         visitUrl("place.php?whichplace=thesea&action=thesea_left2");
         runChoice(1);
       });
+    }
+
+    const barrels = $items`little firkin, normal barrel, big tun, weathered barrel, dusty barrel, disintegrating barrel, moist barrel, rotting barrel, mouldering barrel, barnacled barrel`;
+
+    const firstBarrel = barrels.find((barrel) => itemAmount(barrel) > 0);
+    if (firstBarrel) {
+      print("Smashing barrels...");
+      let page = visitUrl(`inv_use.php?pwd&whichitem=${toInt(firstBarrel)}&choice=1`);
+      while (page.includes("Click a barrel to smash it!")) {
+        print(
+          `Smashing ${Math.min(
+            100,
+            sum(barrels, (b: Item) => itemAmount(b))
+          )} barrels...`
+        );
+        page = visitUrl("choice.php?pwd&whichchoice=1101&option=2");
+      }
     }
   }
 }

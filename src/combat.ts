@@ -9,6 +9,7 @@ import {
   haveFamiliar,
   myInebriety,
   inebrietyLimit,
+  Location,
 } from "kolmafia";
 import {
   $effect,

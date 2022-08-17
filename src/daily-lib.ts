@@ -46,6 +46,9 @@ import {
   drinksilent,
   takeStorage,
   storageAmount,
+  Item,
+  Effect,
+  Familiar,
 } from "kolmafia";
 import { $effect, $item, $items, $skill } from "libram";
 
@@ -108,8 +111,8 @@ const priceCaps: { [index: string]: number } = {
   "spice melange": 500000,
   "splendid martini": 10000,
   "Eye and a Twist": 10000,
-  "emergency margarita": 20000,
-  "vintage smart drink": 20000,
+  "emergency margarita": 100000,
+  "vintage smart drink": 100000,
 };
 
 export function getCapped(qty: number, item: Item, maxPrice?: number, throwOnFail = true): number {

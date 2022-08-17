@@ -28,6 +28,7 @@ import {
   myMp,
   eat,
   outfit,
+  Monster,
 } from "kolmafia";
 import {
   $familiar,

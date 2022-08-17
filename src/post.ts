@@ -32,6 +32,7 @@ import {
   print,
   faxbot,
   myStorageMeat,
+  Item,
 } from "kolmafia";
 import {
   $skill,
@@ -50,7 +51,7 @@ import {
 } from "libram";
 import { adventureMacro, Macro, withMacro } from "./combat";
 
-import { ensureMpSausage, ensureEffect, itemPriority, withStash, withFamiliar } from "./daily-lib";
+import { ensureMpSausage, ensureEffect, withStash, withFamiliar } from "./daily-lib";
 
 function getItem(qty: number, item: Item, maxPrice: number) {
   if (qty > 15) throw "Bad get!";
