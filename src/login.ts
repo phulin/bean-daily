@@ -1,15 +1,52 @@
 import {
   bufferToFile,
   fileToBuffer,
+  getAllProperties,
   getClanName,
+  getProperty,
+  myName,
   print,
   todayToString,
   visitUrl,
   xpath,
 } from "kolmafia";
-import { Clan } from "libram";
+import { Clan, get, set } from "libram";
+
+function setsEqual(a: Set<string>, b: Set<string>) {
+  return a.size === b.size && [...a].every((x) => b.has(x));
+}
 
 export function main(): void {
+  if (myName().toLowerCase() !== "worthawholebean") return;
+  prefBackup();
+  stashLog();
+}
+
+function prefBackup() {
+  if (get("_prefsBackedUp", false)) return;
+
+  print("Backing up prefs...", "blue");
+
+  bufferToFile(
+    Object.entries(getAllProperties("", false))
+      .map(([name]) => {
+        const rawValue = getProperty(name);
+        const value = rawValue
+          .replace(/[\\=:#!]/g, (match) => `\\${match}`)
+          .replace(/\t/g, "\\t")
+          .replace(/\n/g, "\\n")
+          .replace(/\f/g, "\\f")
+          .replace(/\r/g, "\\r");
+        return rawValue === "" ? `${name}\n` : `${name}=${value}\n`;
+      })
+      .join(""),
+    `data/${myName}_prefs_backup.txt`
+  );
+
+  set("_prefsBackedUp", true);
+}
+
+function stashLog() {
   const originalClan = getClanName();
   try {
     Clan.join("The 100% of Scientific FACT Club");
@@ -30,20 +67,21 @@ export function main(): void {
     const savedLines = savedLog.split(/[\r\n]+/g).filter((line) => line.length > 0);
     print("Last 5 saved lines:", "blue");
     for (const line of savedLines.slice(-5)) print(line);
-    const lastSavedLine = savedLines.length > 0 ? savedLines[savedLines.length - 1] : null;
-    const lastOverlapIndexReversed = newLinesReversed.findIndex(
-      (newLine) => newLine === lastSavedLine
-    );
-    let allLines: string[];
-    if (lastOverlapIndexReversed === -1) {
-      allLines = [...savedLines, ...newLines];
-    } else {
-      const firstFreshIndex = newLinesReversed.length - lastOverlapIndexReversed;
-      print(`${firstFreshIndex} lines overlap with saved.`);
-      print("First 5 new lines:", "blue");
-      for (const line of newLines.slice(firstFreshIndex)) print(line);
-      allLines = [...savedLines, ...newLines.slice(firstFreshIndex)];
+
+    let i;
+    for (i = Math.min(savedLines.length, newLines.length); i >= 0; i--) {
+      const savedLinesSet = new Set(
+        savedLines.slice(savedLines.length - i).map((l) => l.toLowerCase())
+      );
+      const newLinesSet = new Set(newLines.slice(0, i).map((l) => l.toLowerCase()));
+      if (setsEqual(savedLinesSet, newLinesSet)) break;
     }
+
+    print(`${i} lines overlap with saved => ${newLines.length - i} new lines.`);
+    print("First 5 new lines:", "blue");
+    for (const line of newLines.slice(i, i + 5)) print(line);
+    const allLines = [...savedLines, ...newLines.slice(i)];
+
     print(`Saving updated log with ${allLines.length} lines.`);
     bufferToFile(allLines.join("\n"), "data/stash_log.txt");
   } finally {

@@ -1,38 +1,40 @@
 import {
-  inebrietyLimit,
-  myFamiliar,
-  myInebriety,
-  myFullness,
-  fullnessLimit,
-  getProperty,
-  retrieveItem,
-  reverseNumberology,
-  cliExecute,
-  eat,
-  use,
-  print,
-  useFamiliar,
-  equip,
-  maximize,
-  buy,
-  getCampground,
-  create,
-  visitUrl,
-  runChoice,
-  canInteract,
   availableAmount,
-  myAdventures,
-  mySpleenUse,
-  spleenLimit,
-  haveEffect,
-  sweetSynthesis,
-  myAscensions,
-  toInt,
-  mallPrice,
-  outfit,
+  buy,
+  canInteract,
+  cliExecute,
+  create,
+  eat,
+  equip,
+  fullnessLimit,
+  getCampground,
   getChateau,
-  itemAmount,
+  getProperty,
+  haveEffect,
+  inebrietyLimit,
   Item,
+  itemAmount,
+  mallPrice,
+  maximize,
+  myAdventures,
+  myAscensions,
+  myFamiliar,
+  myFullness,
+  myInebriety,
+  mySpleenUse,
+  outfit,
+  print,
+  retrieveItem,
+  retrievePrice,
+  reverseNumberology,
+  runChoice,
+  setAutoAttack,
+  spleenLimit,
+  sweetSynthesis,
+  toInt,
+  use,
+  useFamiliar,
+  visitUrl,
 } from "kolmafia";
 import {
   $effect,
@@ -46,11 +48,11 @@ import {
   maximizeCached,
   sum,
 } from "libram";
+import { getNumber } from "libram/dist/property";
 import { adventureMacro, Macro } from "./combat";
 import {
   cheaper,
   drinkSafe,
-  drinkSpleen,
   ensureEffect,
   ensureOde,
   fillAllSpleen,
@@ -80,6 +82,9 @@ export function main(args = "") {
     throw "For some reason you have spooky putty in your inventory. Go fix that.";
   }
 
+  setAutoAttack(0);
+  cliExecute("ccs bean-daily");
+
   const normalFinished = getProperty("questL13Final") === "finished";
   const csFinished =
     (getProperty("csServicesPerformed").match(/,/g) || []).length === 10 && canInteract();
@@ -90,10 +95,14 @@ export function main(args = "") {
   print(`Using adventure value ${MPA}.`, "blue");
 
   let sausagesEaten = getPropertyInt("_sausagesEaten");
+  let possibleSausages = Math.min(
+    23,
+    availableAmount($item`magical sausage`) + availableAmount($item`magical sausage casing`)
+  );
   let done = false;
   const borrowTime = !get("_borrowedTimeUsed") && args.includes("ascend");
-  if (sausagesEaten < 23 || borrowTime) {
-    let count = Math.max(23 - sausagesEaten, 0);
+  if (sausagesEaten < possibleSausages || borrowTime) {
+    let count = Math.max(possibleSausages - sausagesEaten, 0);
     retrieveItem(count, $item`magical sausage`);
     for (let i = 0; i < count; i++) {
       while (
@@ -107,7 +116,11 @@ export function main(args = "") {
       eat(1, $item`magical sausage`);
     }
     sausagesEaten = getPropertyInt("_sausagesEaten");
-    count = Math.max(23 - sausagesEaten, 0);
+    possibleSausages = Math.min(
+      23,
+      availableAmount($item`magical sausage`) + availableAmount($item`magical sausage casing`)
+    );
+    count = Math.max(possibleSausages - sausagesEaten, 0);
     eat(count, $item`magical sausage`);
     if (borrowTime) use(1, $item`borrowed time`);
 
@@ -216,9 +229,14 @@ export function main(args = "") {
   if (!done) {
     useFamiliar($familiar`Stooper`);
     if (myInebriety() + 1 === inebrietyLimit()) {
-      ensureOde(1);
-      equip($item`tuxedo shirt`);
-      drinkSafe(1, $item`splendid martini`);
+      if (getNumber("familiarSweat") >= 211) {
+        visitUrl("inventory.php?action=distill&pwd");
+        visitUrl("choice.php?pwd&whichchoice=1476&option=1");
+      } else {
+        ensureOde(1);
+        equip($item`tuxedo shirt`);
+        drinkSafe(1, $item`splendid martini`);
+      }
     }
 
     if (myInebriety() === inebrietyLimit()) {
@@ -265,14 +283,14 @@ export function main(args = "") {
         equip($item`burning cape`);
       }
       useFamiliar($familiar`Left-Hand Man`);
-      maximize("adventures, equip Spacegate military insignia", false);
+      maximize("6000 adventures, 5000 bonus Spacegate scientist's insignia", false);
       cliExecute("/whitelist ferengi");
 
       if (!getChateau()["artificial skylight"]) {
         buy(1, $item`artificial skylight`);
       }
 
-      if (!getCampground()["clockwork maid"]) {
+      if (!getCampground()["clockwork maid"] && retrievePrice($item`clockwork maid`) < 8 * MPA) {
         use(1, $item`clockwork maid`);
       }
     }
@@ -292,7 +310,7 @@ export function main(args = "") {
     }
 
     if (get("_detectiveCasesCompleted") < 3) {
-      cliExecute('call "Detective Solver.ash"');
+      cliExecute("call Detective Solver.ash");
     }
 
     if (!get("_timeSpinnerReplicatorUsed") && get("_timeSpinnerMinutesUsed") <= 8) {
@@ -330,6 +348,21 @@ export function main(args = "") {
           )} barrels...`
         );
         page = visitUrl("choice.php?pwd&whichchoice=1101&option=2");
+      }
+    }
+
+    const gardens = $items`Peppermint Pip Packet, packet of thanksgarden seeds, packet of mushroom spores, packet of tall grass seeds`;
+    const garden = gardens.find((g) => getCampground()[g.name] !== undefined);
+    const growth = garden === undefined ? 0 : getCampground()[garden.name];
+    if (garden !== $item`packet of thanksgarden seeds` || growth < 1) {
+      if (growth < 1) {
+        if (garden !== $item`packet of tall grass seeds`) {
+          use($item`packet of tall grass seeds`);
+        }
+        use($item`Poké-Gro fertilizer`);
+      }
+      if (have($item`packet of thanksgarden seeds`)) {
+        use($item`packet of thanksgarden seeds`);
       }
     }
   }
