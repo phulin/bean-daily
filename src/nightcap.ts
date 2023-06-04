@@ -290,8 +290,15 @@ export function main(args = "") {
         buy(1, $item`artificial skylight`);
       }
 
-      if (!getCampground()["clockwork maid"] && retrievePrice($item`clockwork maid`) < 8 * MPA) {
-        use(1, $item`clockwork maid`);
+      if (!getCampground()["clockwork maid"] && !getCampground()["Meat maid"]) {
+        if (
+          retrievePrice($item`clockwork maid`) <
+          Math.min(8 * MPA, 4 * MPA + retrievePrice($item`Meat maid`))
+        ) {
+          use(1, $item`clockwork maid`);
+        } else if (retrievePrice($item`Meat maid`) < 4 * MPA) {
+          use(1, $item`Meat maid`);
+        }
       }
     }
 
