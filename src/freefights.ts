@@ -1,54 +1,52 @@
 import {
-  getProperty,
-  haveEffect,
-  cliExecute,
-  useFamiliar,
-  changeMcd,
-  visitUrl,
-  handlingChoice,
-  runChoice,
-  myFamiliar,
-  retrieveItem,
-  use,
-  myPrimestat,
-  equip,
-  setProperty,
-  runCombat,
-  maximize,
-  itemAmount,
-  myLevel,
-  myClass,
+  Monster,
   availableAmount,
+  changeMcd,
+  cliExecute,
+  eat,
+  equip,
+  getProperty,
+  handlingChoice,
+  haveEffect,
+  maximize,
+  myBuffedstat,
+  myClass,
+  myLevel,
+  myMaxhp,
+  myMp,
+  myPrimestat,
+  myThrall,
+  outfit,
   print,
   restoreHp,
-  myMaxhp,
+  retrieveItem,
+  runChoice,
+  runCombat,
+  setProperty,
+  use,
+  useFamiliar,
   useSkill,
-  myThrall,
-  myBuffedstat,
-  myMp,
-  eat,
-  outfit,
-  Monster,
+  visitUrl,
 } from "kolmafia";
 import {
-  $familiar,
-  $effect,
-  $item,
-  $classes,
-  $location,
   $class,
-  $skill,
-  $monster,
-  $items,
-  $thrall,
-  $stat,
+  $classes,
+  $effect,
   $effects,
+  $familiar,
+  $item,
+  $items,
+  $location,
+  $monster,
+  $skill,
+  $stat,
+  $thrall,
+  Mood,
+  Witchess,
   get,
   have,
-  Witchess,
-  Mood,
 } from "libram";
-import { adventureMacro, Macro, withMacro } from "./combat";
+import { Macro, adventureMacro, withMacro } from "./combat";
 import {
   ensureEffect,
   ensureMpSausage,
@@ -64,8 +62,8 @@ function levelingMood() {
 
   mood.effect($effect`Video... Games?`, () => {
     if (get("_defectiveTokenUsed")) return;
-    withStash($items`defective game grid token`, () => {
-      use($item`defective game grid token`);
+    withStash($items`defective Game Grid token`, () => {
+      use($item`defective Game Grid token`);
     });
   });
 
@@ -79,14 +77,14 @@ function levelingMood() {
   mood.effect($effect`Triple-Sized`);
   mood.effect($effect`Tomato Power`);
   mood.effect($effect`Gr8ness`);
-  if ($classes`Pastamancer,Sauceror`.includes(myClass())) {
+  if ($classes`Pastamancer, Sauceror`.includes(myClass())) {
     mood.effect($effect`Thaumodynamic`, () => {
       if (!get("_aprilShower")) cliExecute("shower warm");
     });
-    mood.effect($effect`On The Shoulders Of Giants`);
+    mood.effect($effect`On the Shoulders of Giants`);
     mood.effect($effect`Mystically Oiled`);
     mood.effect($effect`Uncucumbered`);
-    mood.effect($effect`We're All Made Of Starfish`);
+    mood.effect($effect`We're All Made of Starfish`);
     mood.effect($effect`Glittering Eyelashes`);
     mood.effect($effect`Baconstoned`);
     mood.effect($effect`Inscrutable Gaze`);
@@ -132,7 +130,7 @@ function thesisMood() {
     ensureEffect($effect`Slippery Oiliness`);
   }
 
-  for (const increaser of $effects`On The Shoulders of Giants, Phorcefullness, Trivia Master`) {
+  for (const increaser of $effects`On the Shoulders of Giants, Phorcefullness, Trivia Master`) {
     if (myBuffedstat($stat`Muscle`) > 1740) break;
     ensureEffect(increaser);
   }

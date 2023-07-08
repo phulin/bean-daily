@@ -1,15 +1,15 @@
 import {
-  inMultiFight,
-  choiceFollowsFight,
-  visitUrl,
-  myFamiliar,
-  haveEffect,
-  adv1,
-  runCombat,
-  haveFamiliar,
-  myInebriety,
-  inebrietyLimit,
   Location,
+  adv1,
+  choiceFollowsFight,
+  haveEffect,
+  haveFamiliar,
+  inMultiFight,
+  inebrietyLimit,
+  myFamiliar,
+  myInebriety,
+  runCombat,
+  visitUrl,
 } from "kolmafia";
 import {
   $effect,
@@ -18,8 +18,8 @@ import {
   $items,
   $skill,
   $skills,
-  get,
   Macro as LibramMacro,
+  get,
 } from "libram";
 
 // multiFight() stolen from Aenimus: https://github.com/Aenimus/aen_cocoabo_farm/blob/master/scripts/aen_combat.ash.
@@ -77,13 +77,12 @@ export class Macro extends LibramMacro {
       .skill($skill`Extract`)
       .skill($skill`Extract Jelly`)
       .externalIf(
-        (haveFamiliar($familiar`Frumious Bandersnatch`) &&
-          haveEffect($effect`The Ode to Booze`) > 0) ||
+        (haveFamiliar($familiar`Frumious Bandersnatch`) && haveEffect($effect`Ode to Booze`) > 0) ||
           haveFamiliar($familiar`Pair of Stomping Boots`),
         "runaway"
       )
       .skill(
-        ...$skills`Spring-Loaded Front Bumper, Reflex Hammer, KGB tranquilizer dart, Throw Latte on Opponent, Snokebomb`
+        ...$skills`Asdon Martin: Spring-Loaded Front Bumper, Reflex Hammer, KGB tranquilizer dart, Throw Latte on Opponent, Snokebomb`
       )
       .item(...$items`Louder Than Bomb, tattered scrap of paper, GOTO, green smoke bomb`)
       .abort();

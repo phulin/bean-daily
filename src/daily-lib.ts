@@ -1,54 +1,54 @@
 import {
-  print,
-  getProperty,
-  itemAmount,
-  closetAmount,
-  takeCloset,
-  shopAmount,
-  takeShop,
-  buy,
-  eat,
-  drink,
-  chew,
-  mySpleenUse,
-  mallPrice,
-  use,
-  toEffect,
-  haveSkill,
-  haveEffect,
-  turnsPerCast,
-  useSkill,
-  spleenLimit,
-  myLevel,
-  myFullness,
-  fullnessLimit,
-  myMaxhp,
-  maximize,
-  restoreHp,
-  equip,
-  myInebriety,
-  inebrietyLimit,
-  cliExecute,
-  myMeat,
-  myClosetMeat,
-  myFamiliar,
-  useFamiliar,
-  setProperty,
-  getClanName,
-  visitUrl,
-  xpath,
-  retrieveItem,
-  myMp,
-  myMaxmp,
-  availableAmount,
-  putStash,
-  takeStash,
-  drinksilent,
-  takeStorage,
-  storageAmount,
-  Item,
   Effect,
   Familiar,
+  Item,
+  availableAmount,
+  buy,
+  chew,
+  cliExecute,
+  closetAmount,
+  drink,
+  drinksilent,
+  eat,
+  equip,
+  fullnessLimit,
+  getClanName,
+  getProperty,
+  haveEffect,
+  haveSkill,
+  inebrietyLimit,
+  itemAmount,
+  mallPrice,
+  maximize,
+  myClosetMeat,
+  myFamiliar,
+  myFullness,
+  myInebriety,
+  myLevel,
+  myMaxhp,
+  myMaxmp,
+  myMeat,
+  myMp,
+  mySpleenUse,
+  print,
+  putStash,
+  restoreHp,
+  retrieveItem,
+  setProperty,
+  shopAmount,
+  spleenLimit,
+  storageAmount,
+  takeCloset,
+  takeShop,
+  takeStash,
+  takeStorage,
+  toEffect,
+  turnsPerCast,
+  use,
+  useFamiliar,
+  useSkill,
+  visitUrl,
+  xpath,
 } from "kolmafia";
 import { $effect, $item, $items, $skill } from "libram";
 
@@ -292,10 +292,10 @@ export function fillStomach() {
   if (
     myLevel() >= 15 &&
     !getPropertyBoolean("_hungerSauceUsed") &&
-    mallPrice($item`Hunger&trade; sauce`) < 3 * MPA
+    mallPrice($item`Hunger™ Sauce`) < 3 * MPA
   ) {
-    getCapped(1, $item`Hunger&trade; sauce`, 3 * MPA);
-    use(1, $item`Hunger&trade; sauce`);
+    getCapped(1, $item`Hunger™ Sauce`, 3 * MPA);
+    use(1, $item`Hunger™ Sauce`);
   }
   if (!getPropertyBoolean("_milkOfMagnesiumUsed")) {
     use(1, $item`milk of magnesium`);
@@ -310,7 +310,7 @@ export function fillStomach() {
     restoreHp(myMaxhp());
     get(count, $item`extra-greasy slider`);
     get(count, $item`Ol' Scratch's salad fork`);
-    getCapped(count, $item`special seasoning`, 5000);
+    getCapped(count, $item`Special Seasoning`, 5000);
     eatSpleen(count, $item`Ol' Scratch's salad fork`);
     eatSpleen(count, $item`extra-greasy slider`);
     fillSomeSpleen();
@@ -377,10 +377,9 @@ function getClanCache(targetClanName: string | null = null) {
     (targetClanName !== null && !clanCache.has(targetClanName))
   ) {
     const recruiter = visitUrl("clan_signup.php");
-    const clanIds: number[] = xpath(
-      recruiter,
-      '//select[@name="whichclan"]/option/@value'
-    ).map((s: string) => parseInt(s, 10));
+    const clanIds: number[] = xpath(recruiter, '//select[@name="whichclan"]/option/@value').map(
+      (s: string) => parseInt(s, 10)
+    );
     const clanNames: string[] = xpath(recruiter, '//select[@name="whichclan"]/option/text()');
     const clanNamesAndIds = clanIds.reduce(
       (list, clanId, index) => [...list, [clanNames[index], clanId] as [string, number]],
@@ -443,9 +442,10 @@ export function withStash<T>(itemsToTake: Item[], action: () => T) {
     }
     return action();
   } finally {
-    // eslint-disable-next-line no-unsafe-finally
-    if (getClanName() !== stashClanName)
+    if (getClanName() !== stashClanName) {
+      // eslint-disable-next-line no-unsafe-finally
       throw "Wrong clan! Don't put stuff back in the stash here!";
+    }
     for (const [item, quantityTaken] of quantitiesTaken.entries()) {
       retrieveItem(quantityTaken, item);
       putStash(quantityTaken, item);

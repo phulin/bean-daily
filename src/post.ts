@@ -1,79 +1,42 @@
 import {
-  itemAmount,
-  closetAmount,
-  takeCloset,
-  shopAmount,
-  takeShop,
-  retrieveItem,
-  mallPrice,
-  buy,
+  availableAmount,
   canInteract,
   cliExecute,
-  setProperty,
-  useSkill,
-  runChoice,
-  getProperty,
-  myAdventures,
-  eat,
-  availableAmount,
-  equip,
-  myClass,
-  useFamiliar,
-  use,
-  haveEffect,
-  maximize,
-  myBuffedstat,
-  fullnessLimit,
-  myFullness,
-  inebrietyLimit,
-  myInebriety,
-  drink,
   create,
-  print,
-  faxbot,
+  eat,
+  equip,
+  getProperty,
+  haveEffect,
+  mallPrice,
+  maximize,
+  myAdventures,
+  myBuffedstat,
+  myClass,
   myStorageMeat,
-  Item,
+  print,
+  runChoice,
+  setProperty,
+  use,
+  useFamiliar,
+  useSkill,
 } from "kolmafia";
 import {
-  $skill,
-  $item,
-  $slot,
   $class,
-  $familiar,
   $effect,
-  $stat,
-  $location,
+  $familiar,
+  $item,
   $items,
+  $location,
   $monster,
-  get,
+  $skill,
+  $slot,
+  $stat,
   Witchess,
-  SourceTerminal,
+  get,
 } from "libram";
-import { adventureMacro, Macro, withMacro } from "./combat";
+import { Macro, adventureMacro, withMacro } from "./combat";
 
-import { ensureMpSausage, ensureEffect, withStash, withFamiliar } from "./daily-lib";
-
-function getItem(qty: number, item: Item, maxPrice: number) {
-  if (qty > 15) throw "Bad get!";
-
-  let remaining = qty - itemAmount(item);
-  if (remaining <= 0) return;
-
-  const getCloset = Math.min(remaining, closetAmount(item));
-  if (!takeCloset(getCloset, item)) throw "Failed to remove item from closet.";
-  remaining -= getCloset;
-  if (remaining <= 0) return;
-
-  const getMall = Math.min(remaining, shopAmount(item));
-  if (!takeShop(getMall, item)) throw "Failed to remove item from shop.";
-  remaining -= getMall;
-  if (remaining <= 0) return;
-
-  if (!retrieveItem(remaining, item)) {
-    if (mallPrice(item) > maxPrice) throw "Mall price too high.";
-    if (!buy(remaining, item)) throw "Failed to buy item.";
-  }
-}
+import { ensureEffect, ensureMpSausage, withFamiliar, withStash } from "./daily-lib";
 
 if (!canInteract()) throw "Break prism first.";
 
@@ -115,11 +78,11 @@ cliExecute("mood execute");
 equip($item`Iunion Crown`);
 equip($slot`shirt`, $item`none`);
 equip($item`Fourth of May Cosplay Saber`);
-equip($item`Kramco Sausage-o-Matic&trade;`);
+equip($item`Kramco Sausage-o-Matic™`);
 // equip($item`Great Wolf's beastly trousers`);
 equip($slot`acc1`, $item`Eight Days a Week Pill Keeper`);
 equip($slot`acc2`, $item`Powerful Glove`);
-equip($slot`acc3`, $item`Lil' Doctor&trade; Bag`);
+equip($slot`acc3`, $item`Lil' Doctor™ bag`);
 
 if (myClass() === $class`Pastamancer`) useSkill(1, $skill`Bind Undead Elbow Macaroni`);
 
@@ -138,15 +101,15 @@ if (!get("_thesisDelivered")) {
   useFamiliar($familiar`Pocket Professor`);
 
   const neededXp = 400 - $familiar`Pocket Professor`.experience;
-  if (neededXp >= 20 && mallPrice($item`ghost dog chow`) < 2500)
-    use(Math.floor(neededXp / 20), $item`ghost dog chow`);
+  if (neededXp >= 20 && mallPrice($item`Ghost Dog Chow`) < 2500)
+    use(Math.floor(neededXp / 20), $item`Ghost Dog Chow`);
 
   ensureEffect($effect`Heart of White`);
   if (haveEffect($effect`Blue Swayed`) < 50) {
     use(Math.floor((59 - haveEffect($effect`Blue Swayed`)) / 10), $item`pulled blue taffy`);
   }
   if (haveEffect($effect`Video... Games?`) === 0 && !get("_defectiveTokenUsed")) {
-    use($item`defective game grid token`);
+    use($item`defective Game Grid token`);
   }
 
   equip($item`giant yellow hat`);
@@ -163,7 +126,7 @@ if (!get("_thesisDelivered")) {
           "!hasskill lecture on relativity",
           Macro.skill($skill`Digitize`).item($item`Spooky Putty sheet`)
         )
-          .trySkill($skill`Lecture on Relativity`)
+          .trySkill($skill`lecture on relativity`)
           .kill(),
         () => Witchess.fightPiece($monster`Witchess Bishop`)
       );
@@ -186,7 +149,7 @@ if (!get("_thesisDelivered")) {
   }
   while ($familiar`Pocket Professor`.experience < 400 && get("_brickoFights") < 10) {
     ensureMpSausage(100);
-    withMacro(Macro.kill(), () => use(1, $item`bricko ooze`));
+    withMacro(Macro.kill(), () => use(1, $item`BRICKO ooze`));
   }
   while ($familiar`Pocket Professor`.experience < 400 && Witchess.fightsDone() < 4) {
     ensureMpSausage(100);
@@ -194,13 +157,13 @@ if (!get("_thesisDelivered")) {
   }
   if ($familiar`Pocket Professor`.experience < 400) {
     const neededXp2 = 400 - $familiar`Pocket Professor`.experience;
-    if (neededXp2 >= 20 && mallPrice($item`ghost dog chow`) < 5000) {
-      use(Math.floor(neededXp2 / 20), $item`ghost dog chow`);
+    if (neededXp2 >= 20 && mallPrice($item`Ghost Dog Chow`) < 5000) {
+      use(Math.floor(neededXp2 / 20), $item`Ghost Dog Chow`);
     }
 
     if ($familiar`Pocket Professor`.experience < 400) {
       maximize("familiar weight, equip Pocket Professor memory chip", false);
-      withMacro(Macro.trySkill($skill`Lecture on Relativity`).kill(), () =>
+      withMacro(Macro.trySkill($skill`lecture on relativity`).kill(), () =>
         Witchess.fightPiece($monster`Witchess Bishop`)
       );
     }
@@ -233,7 +196,7 @@ if (!get("_thesisDelivered")) {
     throw "Failed to get mus high enough.";
   }
 
-  adventureMacro($location`The Neverending Party`, Macro.skill($skill`Deliver your thesis!`));
+  adventureMacro($location`The Neverending Party`, Macro.skill($skill`deliver your thesis!`));
 }
 
 if (haveEffect($effect`Jingle Jangle Jingle`) < 1500) cliExecute("send to buffy || 1800 jingle");
